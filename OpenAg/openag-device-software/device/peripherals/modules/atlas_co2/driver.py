@@ -77,7 +77,7 @@ class AtlasCo2Driver(driver.AtlasDriver):
 
             # Wait for at least 10 minutes for sensor to warm up
             start_time = time.time()
-            while time.time() - start_time < 600:
+            while time.time() - start_time < 60:
 
                 # Keep logs active
                 self.logger.debug("Warming up, waiting 10 minutes")
