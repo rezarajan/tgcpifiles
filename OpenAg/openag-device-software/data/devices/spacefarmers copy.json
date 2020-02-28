@@ -71,35 +71,6 @@
                     "address": "0x66"
                 }
             }
-        },
-        {
-            "name": "LEDPanel-Side",
-            "type": "LEDSwitch",
-            "uuid": "d7a6bf94-dd4f-4a36-9dfb-5c6c978efe02",
-            "parameters": {
-               "setup": {
-                    "name": "LED Panel SideLight Actuator",
-                    "file_name": "led_spacemod/setups/spacemod"
-                },
-                "variables": {
-                    "sensor": {
-                        "ppfd_umol_m2_s": "light_ppfd_umol_m2_s",
-                        "spectrum_nm_percent": "light_spectrum_nm_percent",
-                        "illumination_distance_cm": "light_illumination_distance_cm"
-                    },
-                    "actuator": {
-                        "channel_output_percents": "light_channel_output_percents"
-                    }
-                },
-                "communication": {
-                    "bus": "none", 
-                    "mux": "none", 
-                    "is_active_high": true,
-                    "address": "none",
-                    "port": "none",
-                    "pin": 4
-                }
-            }
         }
     ],
     "controllers": null

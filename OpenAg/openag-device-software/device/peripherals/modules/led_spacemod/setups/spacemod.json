@@ -1,0 +1,147 @@
+{
+	"name":  "Light Panel Taurus Actuator",
+	"version": "1",
+	"uuid": "d7a6bf94-dd4f-4a36-9dfb-5c6c978efe02",
+	"module_name": "led_spacemod/manager",
+	"class_name": "LEDSpacemodManager",
+	"parameters": {
+		"variables": {
+			"sensor": {
+				"ppfd_umol_m2_s": {
+					"name": {
+						"type": "string",
+						"default": "light_ppfd_umol_m2_s"
+					}
+				},
+				"spectrum_nm_percent": {
+					"name": {
+						"type": "string",
+						"default": "light_spectrum_nm_percent"
+					}
+				},
+				"illumination_distance_cm": {
+					"name": {
+						"type": "string",
+						"default": "light_illumination_distance_cm"
+					} 
+				}
+			},
+			"actuator": {
+				"channel_setpoint_percents": {
+					"name": {
+						"type": "string",
+						"default": "light_channel_setpoint_percents"
+					}
+				}
+			}
+		},	
+		"communication": {
+			"devices": [
+				{
+					"bus": {
+						"type": "integer",
+						"default": "none"
+					},
+					"mux": {
+						"type": "string",
+						"default": "none"
+					},
+					"is_active_high": {
+						"type": "boolean",
+						"default": true
+					},
+					"address": {
+						"type": "integer",
+						"default": "none"
+					},
+					"port": {
+						"type": "integer",
+						"default": "none"
+					},
+					"pin": {
+						"type": "integer",
+						"default": 4
+					}
+				}
+			]
+		}
+	},
+	"properties": {
+		"channel_types": {
+			"LS": {
+				"name": "Light Srip",
+				"relative_intensity_percent": 1.8,
+				"spectrum_nm_percent": {
+					"380-399": 0,
+					"400-499": 0,
+					"500-599": 0,
+					"600-700": 10.7,
+					"701-780": 89.3
+				}
+			}
+		}
+	},
+	"events": [
+		{
+		    "name": "Reset",
+		    "description": "Reset sensor.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Shutdown",
+		    "description": "Shutdown sensor.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Set Sampling Interval",
+		    "description": "Sets sampling interval.",
+		    "value": {
+		        "default": 10,
+		        "unit": "Seconds"
+		    },
+		    "sequence": null
+		},
+		{
+		    "name": "Enable Manual Mode",
+		    "description": "Allows actuator to be controlled by manual events.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Turn On",
+		    "description": "Turns on all channels on light panel.",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": true
+		},
+		{
+		    "name": "Turn Off",
+		    "description": "Turns off all channels on light panel.",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": true
+		},
+		{
+		    "name": "Fade",
+		    "description": "Sequentially fades individual channels up/down.",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": true
+		},
+		{
+		    "name": "Sunrise",
+		    "description": "Runs sunrise / sunset demo.",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": true
+		}
+	],
+	"info": {
+		"variables": {
+			"sensors": null,
+			"actuators":null
+		}
+	}
+}
