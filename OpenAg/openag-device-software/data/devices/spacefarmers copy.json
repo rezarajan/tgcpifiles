@@ -1,6 +1,6 @@
 {   
     "format": "openag-standard-v1",
-    "name": "Space Farm",
+    "name": "Space Farm (Old)",
     "uuid": "3e11d7d0-d76e-4e3c-b762-80c460f0118f",
     "peripherals": [
         {
