@@ -13,7 +13,6 @@ class SolenoidManager(manager.PeripheralManager):
     """Manages an Pump Solenoid"""
 
     prev_misting_time: float = 0
-    misting_interval: float # seconds
     prev_reinit_time: float = 0
     reinit_interval: float = 300  # seconds -> every 5 minutes
 
@@ -25,13 +24,47 @@ class SolenoidManager(manager.PeripheralManager):
 
 
         # Initialize panel and channel configs
-        self.config = self.communication
+        self.solenoid_config = self.communication
 
         # Initialize variable names
-        self.misting_interval = self.variables["actuator"]["misting_cycle"]
+        self.misting_cycle_name = self.variables["actuator"]["misting_cycle"]
+        # self.misting_solenoid_state = self.variables["actuator"]["misting_solenoid_state"]
 
-        if self.misting_interval == None:
-            self.misting_interval = 60 # misting cycle - defaults to every minute
+    @property
+    def misting_interval(self) -> Any:
+        """Gets spectrum value."""
+        return self.state.get_peripheral_reported_sensor_value(
+            self.name, self.misting_cycle_name
+        )
+
+    @misting_interval.setter
+    def misting_interval(self, value: Optional[Dict[str, float]]) -> None:
+        """Sets spectrum value in shared state."""
+        self.state.set_peripheral_reported_sensor_value(
+            self.name, self.misting_cycle_name, value
+        )
+        self.state.set_environment_reported_sensor_value(
+            self.name, self.misting_cycle_name, value, simple=True
+        )
+        self.logger.debug("Setting Misting Interval to {}".format(value))
+
+    @property
+    def desired_misting_interval(self) -> Optional[float]:
+        """Gets desired misting cycle time from shared environment state if not 
+        in manual mode, otherwise gets it from peripheral state."""
+        if self.mode != modes.MANUAL:
+            value = self.state.get_environment_desired_sensor_value(self.misting_cycle_name)
+            if value != None:
+                self.logger.info("Misting Value {}".format(value))
+                return int(value)
+            return None
+        else:
+            value = self.state.get_peripheral_reported_sensor_value(
+                self.name, self.misting_cycle_name
+            )
+            if value != None:
+                return int(value)
+            return None
 
 
     def initialize_peripheral(self) -> None:
@@ -41,14 +74,19 @@ class SolenoidManager(manager.PeripheralManager):
         # Clear reported values
         self.clear_reported_values()
 
+        if self.misting_interval == None and self.desired_misting_interval != None:
+            self.misting_interval = self.desired_misting_interval
+        else:
+            self.misting_interval = 600
+
         # Initialize health
         self.health = 100.0
 
         # Initialize driver
         try:
-            self.driver = driver.LEDSpacemodDriver(
+            self.driver = driver.SolenoidDriver(
                 name=self.name,
-                config=self.config,
+                config=self.solenoid_config,
                 i2c_lock=self.i2c_lock,
                 simulate=self.simulate,
                 mux_simulator=self.mux_simulator,
@@ -64,6 +102,19 @@ class SolenoidManager(manager.PeripheralManager):
         self.logger.debug("Setting up")
         try:
             self.driver.turn_off()
+            # self.state.set_peripheral_reported_actuator_value(
+            # self.name, self.mister_solenoid_state, "Off"
+            # )
+            self.state.set_peripheral_reported_actuator_value(
+            self.name, self.misting_cycle_name, self.desired_misting_interval
+            )
+            # self.state.set_environment_reported_actuator_value(
+            #     self.mister_solenoid_state, "Off"
+            # )
+            self.state.set_environment_reported_actuator_value(
+                self.misting_cycle_name, self.desired_misting_interval
+            )
+
             self.health = (100.0)
         except exceptions.DriverError as e:
             self.logger.exception("Unable to setup")
@@ -76,9 +127,9 @@ class SolenoidManager(manager.PeripheralManager):
 
         # Check for misting timeout - must send update to device every misting cycle
         misting_required = False
-        if self.misting_interval != None:
+        if self.desired_misting_interval != None:
             misting_delta = time.time() - self.prev_misting_time
-            if misting_delta > self.misting_interval:
+            if misting_delta > self.desired_misting_interval:
                 misting_required = True
                 self.prev_misting_time = time.time()
 
@@ -96,13 +147,8 @@ class SolenoidManager(manager.PeripheralManager):
 
     def clear_reported_values(self) -> None:
         """Clears reported values."""
-        self.intensity = None
-        self.spectrum = None
-        self.distance = None
-        self.channel_setpoints = None
-        self.prev_desired_intensity = None
-        self.prev_desired_spectrum = None
-        self.prev_desired_distance = None
+        self.misting_interval = None
+        self.prev_misting_time = None
 
 
     ##### EVENT FUNCTIONS ##############################################################
@@ -154,6 +200,18 @@ class SolenoidManager(manager.PeripheralManager):
         # Turn on driver and update reported variables
         try:
             self.driver.turn_on()
+            self.state.set_peripheral_reported_actuator_value(
+            self.name, self.mister_solenoid_state, "On"
+            )
+            self.state.set_peripheral_reported_actuator_value(
+            self.name, self.misting_cycle_name, self.desired_misting_interval
+            )
+            self.state.set_environment_reported_actuator_value(
+                self.mister_solenoid_state, "On"
+            )
+            self.state.set_environment_reported_actuator_value(
+                self.mister_solenoid_state, self.desired_misting_interval
+            )
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
             message = "Unable to turn on: {}".format(e)
@@ -189,6 +247,18 @@ class SolenoidManager(manager.PeripheralManager):
         # Turn off driver and update reported variables
         try:
             self.driver.turn_off()
+            self.state.set_peripheral_reported_actuator_value(
+            self.name, self.mister_solenoid_state, "Off"
+            )
+            self.state.set_peripheral_reported_actuator_value(
+            self.name, self.misting_cycle_name, self.desired_misting_interval
+            )
+            self.state.set_environment_reported_actuator_value(
+                self.mister_solenoid_state, "Off"
+            )
+            self.state.set_environment_reported_actuator_value(
+                self.mister_solenoid_state, self.desired_misting_interval
+            )
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
             message = "Unable to turn off: {}".format(e)

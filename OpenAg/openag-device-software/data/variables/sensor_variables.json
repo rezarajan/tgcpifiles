@@ -250,5 +250,33 @@
 				"type": "number"
 			}
 		}
-	}
+	},
+	{
+        "key": "mister_solenoid_state",
+        "info": {
+            "name": {
+                "brief": "Mister Solenoid",
+                "verbose": "Pump Mister Solenoid"
+            },
+            "unit": {
+                "brief": "Mister State",
+                "verbose": "Mister Solenoid State (On/Off)",
+                "type": "string"
+            }
+        }
+	},
+	{
+        "key": "misting_cycle",
+        "info": {
+            "name": {
+                "brief": "Misting Cycle",
+                "verbose": "Mister Cycle (Off) Time"
+            },
+            "unit": {
+                "brief": "s",
+                "verbose": "Seconds",
+                "type": "number"
+            }
+        }
+    }
 ]

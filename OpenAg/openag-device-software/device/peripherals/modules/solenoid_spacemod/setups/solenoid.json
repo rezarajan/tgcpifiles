@@ -1,8 +1,8 @@
 {
-	"name":  "Mister Solenoid Actuator",
+	"name":  "Solenoid Actuator",
 	"version": "1",
-	"uuid": "1f50832f-6ed7-4985-86a7-7296b075943b",
-	"module_name": "solenoid_spacemod/manager",
+	"uuid": "bda1f18e-5f11-11ea-8df1-6003088e020e",
+	"module_name": "solenoid_spacemod.manager",
 	"class_name": "SolenoidManager",
 	"parameters": {
 		"variables": {
@@ -10,8 +10,8 @@
 			"actuator": {
 				"misting_cycle": {
 					"name": {
-						"type": "integer",
-						"default": 20000
+						"type": "String",
+						"default": "Mister Cycle (Off) Time"
 					}
 				}
 			}
@@ -48,19 +48,6 @@
 		}
 	},
 	"properties": {
-		"channel_types": {
-			"LS": {
-				"name": "Light Srip",
-				"relative_intensity_percent": 1.8,
-				"spectrum_nm_percent": {
-					"380-399": 0,
-					"400-499": 0,
-					"500-599": 0,
-					"600-700": 10.7,
-					"701-780": 89.3
-				}
-			}
-		}
 	},
 	"events": [
 		{
@@ -100,20 +87,6 @@
 		{
 		    "name": "Turn Off",
 		    "description": "Turns off all channels on light panel.",
-		    "value": null,
-		    "sequence": null,
-		    "is_manual": true
-		},
-		{
-		    "name": "Fade",
-		    "description": "Sequentially fades individual channels up/down.",
-		    "value": null,
-		    "sequence": null,
-		    "is_manual": true
-		},
-		{
-		    "name": "Sunrise",
-		    "description": "Runs sunrise / sunset demo.",
 		    "value": null,
 		    "sequence": null,
 		    "is_manual": true

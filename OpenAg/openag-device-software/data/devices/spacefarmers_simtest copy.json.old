@@ -1,7 +1,7 @@
 {   
     "format": "openag-standard-v1",
-    "name": "Space Farm",
-    "uuid": "6fdda7da-791f-4ae8-a89f-a3b59c58a16b",
+    "name": "Space Farm Simulation",
+    "uuid": "e51d5fd6-f33b-4b45-ab59-097196c847cc",
     "peripherals": [
         {
             "name": "AtlasPH-Reservoir",
@@ -24,6 +24,7 @@
                 "communication": {
                     "bus": "default", 
                     "mux": "none",  
+                    "channel": 6, 
                     "address": "0x63"
                 }
             }
@@ -46,6 +47,7 @@
                 "communication": {
                     "bus": "default", 
                     "mux": "none",  
+                    "channel": 6, 
                     "address": "0x69"
                 }
             }
@@ -68,18 +70,19 @@
                 "communication": {
                     "bus": "default", 
                     "mux": "none", 
+                    "channel": 6, 
                     "address": "0x66"
                 }
             }
         },
         {
-            "name": "LEDPanel-Side",
-            "type": "LEDSwitch",
-            "uuid": "d7a6bf94-dd4f-4a36-9dfb-5c6c978efe02",
+            "name": "LEDPanel-Top",
+            "type": "LEDDAC5578",
+            "uuid": "5596ed62-0cf6-4e58-b774-94fe7d537b91",
             "parameters": {
                "setup": {
-                    "name": "LED Panel SideLight Actuator",
-                    "file_name": "led_spacemod/setups/spacemod"
+                    "name": "LED Panel Taurus Actuator",
+                    "file_name": "led_dac5578/setups/taurus-v2"
                 },
                 "variables": {
                     "sensor": {
@@ -92,20 +95,16 @@
                     }
                 },
                 "communication": {
-                    "bus": "none", 
-                    "mux": "none", 
-                    "is_active_high": true,
-                    "address": "none",
-                    "port": "none",
-                    "pin": 4,
-                    "hard_reset_pin": 5
+                    "panels": [
+                        {"name": "LEDPanel-Top", "bus": "default", "mux": "default", "channel": 3, "address": "0x47", "active_low": false}
+                    ]
                 }
             }
         },
         {
             "name": "Mister Solenoid Actuator",
             "type": "Solenoid",
-            "uuid": "1f50832f-6ed7-4985-86a7-7296b075943b",
+            "uuid": "6db7687f-80aa-4975-aded-80abfb7ab58f",
             "parameters": {
                "setup": {
                     "name": "Mister Solenoid",

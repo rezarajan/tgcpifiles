@@ -751,6 +751,8 @@ class CoordinatorManager(StateMachineManager):
             peripheral_uuid = peripheral_config_dict["uuid"]
             peripheral_setup_dict = self.get_peripheral_setup_dict(peripheral_uuid)
 
+            self.logger.debug("UUID {}".format(peripheral_uuid))
+
             # Verify valid peripheral config dict
             if peripheral_setup_dict == {}:
                 self.logger.critical(

@@ -1,6 +1,9 @@
 # Import standard python modules
 import os, time, threading
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    pi_gpio_available = False
 
 # Import python types
 from typing import NamedTuple, Optional, Tuple, Dict, Any, List
@@ -15,7 +18,7 @@ from device.peripherals.modules.solenoid_spacemod import exceptions
 
 
 class SolenoidDriver:
-    """Driver for array of led panels controlled by a dac5578."""
+    """Driver for mister solenoid."""
 
     # Initialize var defaults
     is_shutdown: bool = True
@@ -81,24 +84,38 @@ class SolenoidDriver:
         """
         Initialize the gpio line for a button
         """
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.pin, GPIO.OUT)
-        return
+        if not self.simulate:
+            try:
+                GPIO.setmode(GPIO.BOARD)
+                GPIO.setup(self.pin, GPIO.OUT)
+                return
+            except:
+                raise exceptions.GPIOSetupError(logger=self.logger)
 
 
     def turn_on(self) -> Dict[str, float]:
         """Turns the solenoid on and off"""
-        if self.pin != None:
-            GPIO.output(self.pin, GPIO.HIGH)
-            # Misting on time
-            time.sleep(10000)
-            GPIO.output(self.pin, GPIO.LOW)
+        if not self.simulate:
+            try:
+                if self.pin != None:
+                    GPIO.output(self.pin, GPIO.HIGH)
+                    # Misting on time
+                    time.sleep(10000)
+                    GPIO.output(self.pin, GPIO.LOW)
+            except:
+                raise exceptions.TurnOnError(logger=self.logger)
+            
 
 
     def turn_off(self) -> Dict[str, float]:
         """Hard reset for the solenoid"""
-        if self.pin != None:
-            GPIO.output(self.pin, GPIO.LOW)            
+        if not self.simulate:
+            try:
+                if self.pin != None:
+                    GPIO.output(self.pin, GPIO.LOW)      
+            except:
+                raise exceptions.TurnOffError(logger=self.logger)
+
 
     def check_status(self):
         """Device Heartbeat Check"""

@@ -1,0 +1,32 @@
+{   
+    "format": "openag-standard-v1",
+    "name": "Space Farm Simulation",
+    "uuid": "e51d5fd6-f33b-4b45-ab59-097196c847cc",
+    "peripherals": [
+        {
+            "name": "Mister Solenoid Actuator",
+            "type": "Solenoid",
+            "uuid": "bda1f18e-5f11-11ea-8df1-6003088e020e",
+            "parameters": {
+               "setup": {
+                    "name": "Mister Solenoid",
+                    "file_name": "solenoid_spacemod/setups/solenoid"
+                },
+                "variables": {
+                    "actuator": {
+                        "misting_cycle": "misting_cycle",
+                        "mister_solenoid_state": "mister_solenoid_state"
+                    }
+                },
+                "communication": {
+                    "bus": "none", 
+                    "mux": "none", 
+                    "is_active_high": true,
+                    "port": "none",
+                    "pin": 6
+                }
+            }
+        }
+    ],
+    "controllers": null
+}
