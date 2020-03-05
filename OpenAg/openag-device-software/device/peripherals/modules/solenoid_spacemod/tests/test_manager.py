@@ -12,7 +12,7 @@ from device.utilities.communication.i2c.mux_simulator import MuxSimulator
 from device.utilities.state.main import State
 
 # Import peripheral manager
-from device.peripherals.modules.led_spacemod.manager import LEDSpacemodManager
+from device.peripherals.modules.led_dac5578.manager import LEDDAC5578Manager
 
 # Load test config and setup
 CONFIG_PATH = "device/peripherals/modules/led_dac5578/tests/config.json"
@@ -23,7 +23,7 @@ peripheral_config = accessors.get_peripheral_config(
 
 
 def test_init() -> None:
-    manager = LEDSpacemodManager(
+    manager = LEDDAC5578Manager(
         name="Test",
         i2c_lock=threading.RLock(),
         state=State(),
@@ -34,7 +34,7 @@ def test_init() -> None:
 
 
 def test_initialize_peripheral() -> None:
-    manager = LEDSpacemodManager(
+    manager = LEDDAC5578Manager(
         name="Test",
         i2c_lock=threading.RLock(),
         state=State(),

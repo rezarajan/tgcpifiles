@@ -1,36 +1,17 @@
 {
-	"name":  "Light Panel Taurus Actuator",
+	"name":  "Mister Solenoid Actuator",
 	"version": "1",
-	"uuid": "...",
-	"module_name": "led_spacemod/manager",
-	"class_name": "LEDSpacemodManager",
+	"uuid": "1f50832f-6ed7-4985-86a7-7296b075943b",
+	"module_name": "solenoid_spacemod/manager",
+	"class_name": "SolenoidManager",
 	"parameters": {
 		"variables": {
-			"sensor": {
-				"ppfd_umol_m2_s": {
-					"name": {
-						"type": "string",
-						"default": "light_ppfd_umol_m2_s"
-					}
-				},
-				"spectrum_nm_percent": {
-					"name": {
-						"type": "string",
-						"default": "light_spectrum_nm_percent"
-					}
-				},
-				"illumination_distance_cm": {
-					"name": {
-						"type": "string",
-						"default": "light_illumination_distance_cm"
-					} 
-				}
-			},
+			"sensor": null,
 			"actuator": {
-				"channel_setpoint_percents": {
+				"misting_cycle": {
 					"name": {
-						"type": "string",
-						"default": "light_channel_setpoint_percents"
+						"type": "integer",
+						"default": 20000
 					}
 				}
 			}
@@ -60,7 +41,7 @@
 					},
 					"pin": {
 						"type": "integer",
-						"default": 4
+						"default": 6
 					}
 				}
 			]

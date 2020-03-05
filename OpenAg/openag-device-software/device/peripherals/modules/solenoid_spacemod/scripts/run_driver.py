@@ -11,7 +11,7 @@ sys.path.append(os.environ["PROJECT_ROOT"])
 from device.peripherals.classes.peripheral.scripts.run_peripheral import RunnerBase
 
 # Import driver
-from device.peripherals.modules.led_spacemod.driver import LEDSpacemodDriver
+from device.peripherals.modules.solenoid_spacemod.driver import SolenoidDriver
 
 
 class DriverRunner(RunnerBase):  # type: ignore
@@ -19,7 +19,7 @@ class DriverRunner(RunnerBase):  # type: ignore
 
     # Initialize defaults
     default_device = "spacefarmers"
-    default_name = "LEDPanel-Side"
+    default_name = "Mister Solenoid Actuator"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initializes run driver."""
@@ -28,7 +28,7 @@ class DriverRunner(RunnerBase):  # type: ignore
         super().__init__(*args, **kwargs)
 
         # Initialize parser
-        self.parser.add_argument("--toggle", action="store_true", help="toggles leds")
+        self.parser.add_argument("--on", action="store_true", help="turn on solenoid")
         self.parser.add_argument("--off", action="store_true", help="turn off leds")
 
     def run(self, *args: Any, **kwargs: Any) -> None:
@@ -41,15 +41,15 @@ class DriverRunner(RunnerBase):  # type: ignore
         self.config = self.communication
 
         # Initialize driver
-        self.driver = LEDSpacemodDriver(
+        self.driver = SolenoidDriver(
             name=self.args.name,
             i2c_lock=threading.RLock(),
             config=self.config
         )
 
         # Check if setting a channel to a value
-        if self.args.toggle != None:
-            self.driver.toggle()
+        if self.args.on != None:
+            self.driver.turn_on()
 
         # Check if turning off
         elif self.args.off:

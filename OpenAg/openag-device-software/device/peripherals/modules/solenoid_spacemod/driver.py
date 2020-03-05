@@ -11,10 +11,10 @@ from device.utilities.communication.i2c.main import I2C
 from device.utilities.communication.i2c.exceptions import I2CError
 from device.utilities.communication.i2c.mux_simulator import MuxSimulator
 
-from device.peripherals.modules.led_spacemod import exceptions
+from device.peripherals.modules.solenoid_spacemod import exceptions
 
 
-class LEDSpacemodDriver:
+class SolenoidDriver:
     """Driver for array of led panels controlled by a dac5578."""
 
     # Initialize var defaults
@@ -38,11 +38,9 @@ class LEDSpacemodDriver:
         self.address = config.get("address")
         self.port = config.get("port")
         self.pin = config.get("pin")
-        self.hard_reset_pin = config.get("hard_reset_pin")
         self.i2c_lock = i2c_lock
         self.simulate = simulate
         self.mux_simulator = mux_simulator
-        self.is_on = False
 
         # Initialize logger
         logname = "Driver({})".format(name)
@@ -79,9 +77,6 @@ class LEDSpacemodDriver:
         if self.pin != None:
             self.pin = int(self.pin)
 
-        if self.hard_reset_pin != None:
-            self.hard_reset_pin = int(self.hard_reset_pin)    
-
     def setup_gpio(self) -> None:
         """
         Initialize the gpio line for a button
@@ -91,46 +86,21 @@ class LEDSpacemodDriver:
         return
 
 
-    def toggle(self) -> Dict[str, float]:
-        """Toggles LED Soft Latch"""
-        if(self.pin) != None:
+    def turn_on(self) -> Dict[str, float]:
+        """Turns the solenoid on and off"""
+        if self.pin != None:
             GPIO.output(self.pin, GPIO.HIGH)
-            # Soft Latch RC Time
-            time.sleep(0.1)
+            # Misting on time
+            time.sleep(10000)
             GPIO.output(self.pin, GPIO.LOW)
 
-            if self.is_on == False:
-                self.logger.debug("Turning on")
-                self.is_on = True
-            elif self.is_on == True:
-                self.logger.debug("Turning off")
-                self.is_on = False
-            
-
-    # def turn_on(self) -> Dict[str, float]:
-    #     """Toggles LED Soft Latch On"""
-    #     if self.is_on == False:
-    #         self.toggle()
-    #         self.logger.debug("Turning on")
-    #         self.is_on = True
-    #         return 100
 
     def turn_off(self) -> Dict[str, float]:
-        if self.hard_reset_pin != None:
-            """Drains LED Soft Latch - Reset"""
-            GPIO.output(self.hard_reset_pin, GPIO.HIGH)
-            # Soft Latch RC Time
-            time.sleep(0.1)
-            GPIO.output(self.hard_reset_pin, GPIO.LOW)
-
-            self.logger.debug("Turning off")
-            self.is_on = False
-            return 0
-        return 1 #Failed to reset
+        """Hard reset for the solenoid"""
+        if self.pin != None:
+            GPIO.output(self.pin, GPIO.LOW)            
 
     def check_status(self):
         """Device Heartbeat Check"""
-        if self.is_on == True:
-            return 1
-        if self.is_on == False:
-            return 0
+        self.turn_on()
+        return 1

@@ -8,18 +8,18 @@ sys.path.append(os.environ["PROJECT_ROOT"])
 from device.peripherals.classes.peripheral.scripts.run_manager import ManagerRunnerBase
 
 # Import peripheral manager
-from device.peripherals.modules.led_spacemod.manager import LEDSpacemodManager
+from device.peripherals.modules.solenoid_spacemod.manager import SolenoidManager
 
 
 class ManagerRunner(ManagerRunnerBase):  # type: ignore
     """Runs manager."""
 
     # Initialize manager class
-    Manager = LEDSpacemodManager
+    Manager = SolenoidManager
 
     # Initialize defaults
     default_device = "spacefarmers"
-    default_name = "LEDPanel-Side"
+    default_name = "Misting Solenoid"
 
 
 # Run main

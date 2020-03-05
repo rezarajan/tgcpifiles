@@ -26,6 +26,10 @@ class LEDSpacemodManager(manager.PeripheralManager):
         # Initialize parent class
         super().__init__(*args, **kwargs)
 
+        # Initialize panel and channel configs
+        self.config = self.communication
+        self.panel_properties = self.setup_dict.get("properties")
+
         # Initialize variable names
         self.intensity_name = self.variables["sensor"]["ppfd_umol_m2_s"]
         self.spectrum_name = self.variables["sensor"]["spectrum_nm_percent"]
@@ -185,7 +189,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
         try:
             self.driver = driver.LEDSpacemodDriver(
                 name=self.name,
-                panel_configs=self.communication,
+                config=self.config,
                 i2c_lock=self.i2c_lock,
                 simulate=self.simulate,
                 mux_simulator=self.mux_simulator,
@@ -313,8 +317,8 @@ class LEDSpacemodManager(manager.PeripheralManager):
         self, request: Dict[str, Any]
     ) -> Tuple[str, int]:
         """Processes peripheral specific event."""
-        if request["type"] == events.TURN_ON:
-            return self.turn_on()
+        if request["type"] == events.TOGGLE:
+            return self.toggle()
         elif request["type"] == events.TURN_OFF:
             return self.turn_off()
         else:
@@ -322,15 +326,15 @@ class LEDSpacemodManager(manager.PeripheralManager):
 
     def check_peripheral_specific_events(self, request: Dict[str, Any]) -> None:
         """Checks peripheral specific events."""
-        if request["type"] == events.TURN_ON:
-            self._turn_on()
+        if request["type"] == events.TOGGLE:
+            self._toggle()
         elif request["type"] == events.TURN_OFF:
             self._turn_off()
         else:
             message = "Invalid event request type in queue: {}".format(request["type"])
             self.logger.error(message)
 
-    def turn_on(self) -> Tuple[str, int]:
+    def toggle(self) -> Tuple[str, int]:
         """Pre-processes turn on event request."""
         self.logger.debug("Pre-processing turn on event request")
 
@@ -339,13 +343,13 @@ class LEDSpacemodManager(manager.PeripheralManager):
             return "Must be in manual mode", 400
 
         # Add event request to event queue
-        request = {"type": events.TURN_ON}
+        request = {"type": events.TOGGLE}
         self.event_queue.put(request)
 
         # Successfully turned on
         return "Turning on", 200
 
-    def _turn_on(self) -> None:
+    def _toggle(self) -> None:
         """Processes turn on event request."""
         self.logger.debug("Processing turn on event request")
 
@@ -355,7 +359,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
 
         # Turn on driver and update reported variables
         try:
-            self.channel_setpoints = self.driver.turn_on()
+            self.channel_setpoints = self.driver.toggle()
             self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR

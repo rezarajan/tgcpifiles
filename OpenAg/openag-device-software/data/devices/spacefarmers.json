@@ -1,7 +1,7 @@
 {   
     "format": "openag-standard-v1",
     "name": "Space Farm",
-    "uuid": "3e11d7d0-d76e-4e3c-b762-80c460f0118f",
+    "uuid": "6fdda7da-791f-4ae8-a89f-a3b59c58a16b",
     "peripherals": [
         {
             "name": "AtlasPH-Reservoir",
@@ -97,7 +97,32 @@
                     "is_active_high": true,
                     "address": "none",
                     "port": "none",
-                    "pin": 4
+                    "pin": 4,
+                    "hard_reset_pin": 5
+                }
+            }
+        },
+        {
+            "name": "Mister Solenoid Actuator",
+            "type": "Solenoid",
+            "uuid": "1f50832f-6ed7-4985-86a7-7296b075943b",
+            "parameters": {
+               "setup": {
+                    "name": "Mister Solenoid",
+                    "file_name": "solenoid_spacemod/setups/solenoid"
+                },
+                "variables": {
+                    "actuator": {
+                        "misting_cycle": 30000
+                    }
+                },
+                "communication": {
+                    "bus": "none", 
+                    "mux": "none", 
+                    "is_active_high": true,
+                    "address": "none",
+                    "port": "none",
+                    "pin": 6
                 }
             }
         }
