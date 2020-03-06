@@ -190,6 +190,8 @@ class SolenoidManager(manager.PeripheralManager):
                 self.health = 0.0
                 self.mode = modes.ERROR
 
+        self.driver.setup_gpio()
+
         # Check for misting timeout - must send update to device every misting cycle
         misting_required = False
         if self.desired_misting_interval != None:
@@ -208,7 +210,7 @@ class SolenoidManager(manager.PeripheralManager):
         # Write outputs to hardware every misting interval if update isn't inevitable
         if misting_required:
             self.logger.debug("Sending misting signal to solenoid")
-            self.driver.check_status()
+            self.driver.turn_on()
 
             # Update latest misting time
             self.prev_misting_time = time.time()
@@ -274,7 +276,9 @@ class SolenoidManager(manager.PeripheralManager):
 
         # Turn on driver and update reported variables
         try:
+            self.driver.setup_gpio()
             self.driver.turn_on()
+
             self.state.set_peripheral_reported_actuator_value(
             self.name, self.mister_solenoid_state, "On"
             )
@@ -321,6 +325,8 @@ class SolenoidManager(manager.PeripheralManager):
 
         # Turn off driver and update reported variables
         try:
+            
+            self.driver.setup_gpio()
             self.driver.turn_off()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR

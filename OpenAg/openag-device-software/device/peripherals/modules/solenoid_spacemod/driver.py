@@ -121,8 +121,3 @@ class SolenoidDriver:
             except:
                 raise exceptions.TurnOffError(logger=self.logger)
 
-
-    def check_status(self):
-        """Device Heartbeat Check"""
-        self.turn_on()
-        return 1
