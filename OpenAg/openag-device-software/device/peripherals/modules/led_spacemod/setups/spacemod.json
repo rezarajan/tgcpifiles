@@ -1,8 +1,8 @@
 {
-	"name":  "Light Panel Taurus Actuator",
+	"name":  "Light Panel Spacemod Actuator",
 	"version": "1",
 	"uuid": "d7a6bf94-dd4f-4a36-9dfb-5c6c978efe02",
-	"module_name": "led_spacemod/manager",
+	"module_name": "led_spacemod.manager",
 	"class_name": "LEDSpacemodManager",
 	"parameters": {
 		"variables": {
@@ -110,32 +110,18 @@
 		    "sequence": null
 		},
 		{
-		    "name": "Turn On",
+		    "name": "Toggle",
 		    "description": "Turns on all channels on light panel.",
 		    "value": null,
 		    "sequence": null,
-		    "is_manual": true
+		    "is_manual": false
 		},
 		{
 		    "name": "Turn Off",
 		    "description": "Turns off all channels on light panel.",
 		    "value": null,
 		    "sequence": null,
-		    "is_manual": true
-		},
-		{
-		    "name": "Fade",
-		    "description": "Sequentially fades individual channels up/down.",
-		    "value": null,
-		    "sequence": null,
-		    "is_manual": true
-		},
-		{
-		    "name": "Sunrise",
-		    "description": "Runs sunrise / sunset demo.",
-		    "value": null,
-		    "sequence": null,
-		    "is_manual": true
+		    "is_manual": false
 		}
 	],
 	"info": {

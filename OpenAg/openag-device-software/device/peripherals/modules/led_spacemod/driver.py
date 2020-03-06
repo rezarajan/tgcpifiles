@@ -1,6 +1,9 @@
 # Import standard python modules
 import os, time, threading
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    pi_gpio_available = False
 
 # Import python types
 from typing import NamedTuple, Optional, Tuple, Dict, Any, List
@@ -86,19 +89,36 @@ class LEDSpacemodDriver:
         """
         Initialize the gpio line for a button
         """
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.pin, GPIO.OUT)
-        return
+        if self.pin != None and not self.simulate:
+            try:
+
+                GPIO.setmode(GPIO.BOARD)
+                GPIO.setup(self.pin, GPIO.OUT)
+                return
+            except:
+                raise exceptions.GPIOSetupError(logger=self.logger)
 
 
     def toggle(self) -> Dict[str, float]:
         """Toggles LED Soft Latch"""
-        if(self.pin) != None:
-            GPIO.output(self.pin, GPIO.HIGH)
-            # Soft Latch RC Time
-            time.sleep(0.1)
-            GPIO.output(self.pin, GPIO.LOW)
+        if self.pin != None and not self.simulate:
+            try:
+                GPIO.output(self.pin, GPIO.HIGH)
+                # Soft Latch RC Time
+                time.sleep(0.1)
+                GPIO.output(self.pin, GPIO.LOW)
 
+                if self.is_on == False:
+                    self.logger.debug("Turning on")
+                    self.is_on = True
+                elif self.is_on == True:
+                    self.logger.debug("Turning off")
+                    self.is_on = False
+            except:
+                raise exceptions.ToggleError(logger=self.logger)
+
+        
+        if self.simulate:
             if self.is_on == False:
                 self.logger.debug("Turning on")
                 self.is_on = True
@@ -116,16 +136,19 @@ class LEDSpacemodDriver:
     #         return 100
 
     def turn_off(self) -> Dict[str, float]:
-        if self.hard_reset_pin != None:
+        if self.hard_reset_pin != None and not self.simulate:
             """Drains LED Soft Latch - Reset"""
-            GPIO.output(self.hard_reset_pin, GPIO.HIGH)
-            # Soft Latch RC Time
-            time.sleep(0.1)
-            GPIO.output(self.hard_reset_pin, GPIO.LOW)
+            try:
+                GPIO.output(self.hard_reset_pin, GPIO.HIGH)
+                # Soft Latch RC Time
+                time.sleep(0.1)
+                GPIO.output(self.hard_reset_pin, GPIO.LOW)
 
-            self.logger.debug("Turning off")
-            self.is_on = False
-            return 0
+                self.logger.debug("Turning off")
+                self.is_on = False
+                return 0
+            except:
+                raise exceptions.TurnOffError(logger=self.logger)
         return 1 #Failed to reset
 
     def check_status(self):

@@ -13,6 +13,12 @@
 						"type": "String",
 						"default": "Mister Cycle (Off) Time"
 					}
+				},
+				"mister_on_time": {
+					"name": {
+						"type": "String",
+						"default": "Mister On Time"
+					}
 				}
 			}
 		},	
@@ -82,14 +88,14 @@
 		    "description": "Turns on all channels on light panel.",
 		    "value": null,
 		    "sequence": null,
-		    "is_manual": true
+		    "is_manual": false
 		},
 		{
 		    "name": "Turn Off",
 		    "description": "Turns off all channels on light panel.",
 		    "value": null,
 		    "sequence": null,
-		    "is_manual": true
+		    "is_manual": false
 		}
 	],
 	"info": {

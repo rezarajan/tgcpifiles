@@ -17,6 +17,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
     prev_desired_distance: Optional[float] = None
     prev_heartbeat_time: float = 0
     heartbeat_interval: float = 60  # seconds -> every minute
+    prev_lighting_time: float = 0
     prev_reinit_time: float = 0
     reinit_interval: float = 300  # seconds -> every 5 minutes
 
@@ -37,6 +38,10 @@ class LEDSpacemodManager(manager.PeripheralManager):
         self.channel_setpoints_name = self.variables["actuator"][
             "channel_output_percents"
         ]
+
+        self.lighting_on_name = self.variables["actuator"]["lighting_on_time"]
+        self.lighting_off_name = self.variables["actuator"]["lighting_off_time"]
+        self.lighting_status_name = self.variables["actuator"]["lighting_status"]
 
         # Parse panel properties
         self.channel_types = self.panel_properties.get(  # type: ignore
@@ -175,6 +180,71 @@ class LEDSpacemodManager(manager.PeripheralManager):
                 self.name, self.channel_setpoints_name
             )
 
+    @property
+    def lighting_status(self) -> Any:
+        """Gets spectrum value."""
+        return
+
+    @lighting_status.setter
+    def lighting_status(self, value: Optional[Dict[str, float]]) -> None:
+        """Sets spectrum value in shared state."""
+        status = "OFF"
+        if value == 1:
+            status = "ON"
+        elif value == 0:
+            status = "OFF"
+        self.state.set_peripheral_reported_sensor_value(
+            self.name, self.lighting_status_name, status
+        )
+        self.state.set_environment_reported_sensor_value(
+            self.name, self.lighting_status_name, status, simple=True
+        )
+        self.logger.debug("Setting Lighting Status to {}".format(status))
+
+    @property
+    def desired_lighting_time(self) -> Optional[float]:
+        """Gets desired lighting cycle time from shared environment state if not 
+        in manual mode, otherwise gets it from peripheral state."""
+
+        if self.lighting_status == 1:
+            lighting_mode_name = self.lighting_on_name
+        else:
+            lighting_mode_name = self.lighting_off_name
+        if self.mode != modes.MANUAL:
+            value = self.state.get_environment_desired_sensor_value(lighting_mode_name)
+            if value != None:
+                self.logger.info("Lighting On Time Value {}".format(value))
+                return int(value)
+            return None
+        else:
+            value = self.state.get_peripheral_reported_sensor_value(
+                self.name, lighting_mode_name
+            )
+            if value != None:
+                return int(value)
+            return None
+
+    @property
+    def lighting_delta(self) -> Any:
+        """Gets spectrum value."""
+        return
+
+    @lighting_delta.setter
+    def lighting_delta(self, value: Optional[Dict[str, float]]) -> None:
+        """Sets spectrum value in shared state."""
+        name = self.lighting_off_name
+        if self.lighting_status == 1:
+            name = self.lighting_on_name
+        else:
+            name = self.lighting_off_name
+        self.state.set_peripheral_reported_sensor_value(
+            self.name, name, value
+        )
+        self.state.set_environment_reported_sensor_value(
+            self.name, name, value, simple=True
+        )
+        self.logger.debug("Setting Lighting Time Delta to {}".format(value))          
+
     def initialize_peripheral(self) -> None:
         """Initializes peripheral."""
         self.logger.info("Initializing")
@@ -259,21 +329,25 @@ class LEDSpacemodManager(manager.PeripheralManager):
         ):
             all_desired_values_exist = False
 
-        # Check for heartbeat timeout - must send update to device every heartbeat interval
-        heartbeat_required = False
-        if self.heartbeat_interval != None:
-            heartbeat_delta = time.time() - self.prev_heartbeat_time
-            if heartbeat_delta > self.heartbeat_interval:
-                heartbeat_required = True
-                self.prev_heartbeat_time = time.time()
+        # Check for misting timeout - must send update to device every misting cycle
+        lighting_change_required = False
+        if self.desired_lighting_time != None and self.prev_lighting_time != None:
+            self.lighting_delta = time.time() - self.prev_lighting_time
+            if self.lighting_delta > self.desired_lighting_time:
+                lighting_change_required = True
+                self.prev_lighting_time = time.time()
 
-        # Write outputs to hardware every heartbeat interval if update isn't inevitable
-        if not update_required and heartbeat_required and all_desired_values_exist:
-            self.logger.debug("Sending heatbeat to panels")
-            self.driver.check_status()
+        # Write outputs to hardware every misting interval if update isn't inevitable
+        if lighting_change_required:
+            self.logger.debug("Sending signal to toggle lights")
+            self.lighting_status = self.driver.check_status() # 0: off; 1: on
+            self.driver.toggle()
+
+            # Update latest misting time
+            self.prev_lighting_time = time.time()
 
         # Check if update is required
-        if not update_required:
+        if not lighting_change_required:
             return
 
         # Update prev desired values
@@ -293,6 +367,8 @@ class LEDSpacemodManager(manager.PeripheralManager):
         self.prev_desired_intensity = None
         self.prev_desired_spectrum = None
         self.prev_desired_distance = None
+        self.lighting_status = None
+        self.lighting_delta = None
 
     def update_reported_variables(self) -> None:
         """Updates reported variables."""
@@ -359,7 +435,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
 
         # Turn on driver and update reported variables
         try:
-            self.channel_setpoints = self.driver.toggle()
+            self.driver.toggle()
             self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR

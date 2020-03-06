@@ -15,7 +15,38 @@
                 "variables": {
                     "actuator": {
                         "misting_cycle": "misting_cycle",
-                        "mister_solenoid_state": "mister_solenoid_state"
+                        "mister_on_time": "mister_on_time"
+                    }
+                },
+                "communication": {
+                    "bus": "none", 
+                    "mux": "none", 
+                    "is_active_high": true,
+                    "port": "none",
+                    "pin": 6
+                }
+            }
+        },
+        {
+            "name": "LED-Spacemod",
+            "type": "LEDSpacemod",
+            "uuid": "d7a6bf94-dd4f-4a36-9dfb-5c6c978efe02",
+            "parameters": {
+               "setup": {
+                    "name": "LED Panels",
+                    "file_name": "led_spacemod/setups/spacemod"
+                },
+                "variables": {
+                    "sensor": {
+                        "ppfd_umol_m2_s": "light_ppfd_umol_m2_s",
+                        "spectrum_nm_percent": "light_spectrum_nm_percent",
+                        "illumination_distance_cm": "light_illumination_distance_cm"
+                    },
+                    "actuator": {
+                        "channel_output_percents": "light_channel_output_percents",
+                        "lighting_on_time": "lighting_on_time",
+                        "lighting_off_time": "lighting_off_time",
+                        "lighting_status": "lighting_status"
                     }
                 },
                 "communication": {

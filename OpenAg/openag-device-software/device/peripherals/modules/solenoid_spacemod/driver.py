@@ -30,6 +30,7 @@ class SolenoidDriver:
         i2c_lock: threading.RLock,
         simulate: bool = False,
         mux_simulator: Optional[MuxSimulator] = None,
+        on_time: Optional[float] = 600,
     ) -> None:
         """Initializes panel."""
 
@@ -44,6 +45,7 @@ class SolenoidDriver:
         self.i2c_lock = i2c_lock
         self.simulate = simulate
         self.mux_simulator = mux_simulator
+        self.on_time = on_time
 
         # Initialize logger
         logname = "Driver({})".format(name)
@@ -100,10 +102,10 @@ class SolenoidDriver:
                 if self.pin != None:
                     GPIO.output(self.pin, GPIO.HIGH)
                     # Misting on time (seconds)
-                    time.sleep(10)
+                    time.sleep(self.on_time)
                     GPIO.output(self.pin, GPIO.LOW)
                     # Misting off time (seconds)
-                    time.sleep(10)
+                    time.sleep(self.on_time)
             except:
                 raise exceptions.TurnOnError(logger=self.logger)
             

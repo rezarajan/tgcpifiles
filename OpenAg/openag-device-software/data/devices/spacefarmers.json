@@ -114,7 +114,7 @@
                 "variables": {
                     "actuator": {
                         "misting_cycle": "misting_cycle",
-                        "mister_solenoid_state": "mister_solenoid_state"
+                        "mister_on_time": "mister_on_time"
                     }
                 },
                 "communication": {
@@ -123,7 +123,7 @@
                     "is_active_high": true,
                     "address": "none",
                     "port": "none",
-                    "pin": 6
+                    "pin": 8
                 }
             }
         }

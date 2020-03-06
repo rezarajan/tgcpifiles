@@ -9,6 +9,11 @@ class NoActivePanelsError(DriverError):  # type: ignore
 class SetSPDError(DriverError):  # type: ignore
     message_base = "Unable to set SPD"
 
+class GPIOSetupError(DriverError):  # type: ignore
+    message_base = "Unable to setup GPIO"
+
+class ToggleError(DriverError):  # type: ignore
+    message_base = "Unable to toggle"
 
 class TurnOnError(DriverError):  # type: ignore
     message_base = "Unable to turn on"

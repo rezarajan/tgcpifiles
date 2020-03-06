@@ -252,16 +252,16 @@
 		}
 	},
 	{
-        "key": "mister_solenoid_state",
+        "key": "mister_on_time",
         "info": {
             "name": {
-                "brief": "Mister Solenoid",
-                "verbose": "Pump Mister Solenoid"
+                "brief": "Mister On Time",
+                "verbose": "Active Misting Time"
             },
             "unit": {
-                "brief": "Mister State",
-                "verbose": "Mister Solenoid State (On/Off)",
-                "type": "string"
+                "brief": "Mister Time",
+                "verbose": "Mister On Time",
+                "type": "number"
             }
         }
 	},
@@ -278,5 +278,47 @@
                 "type": "number"
             }
         }
-    }
+	},
+	{
+        "key": "lighting_on_time",
+        "info": {
+            "name": {
+                "brief": "Lighting On Time",
+                "verbose": "Lighting On Time"
+            },
+            "unit": {
+                "brief": "Seconds",
+                "verbose": "Lighting On Time",
+                "type": "number"
+            }
+        }
+	},
+	{
+        "key": "lighting_off_time",
+        "info": {
+            "name": {
+                "brief": "Lighting Off Time",
+                "verbose": "Lighting Off Time"
+            },
+            "unit": {
+                "brief": "Seconds",
+                "verbose": "Lighting Off Time",
+                "type": "number"
+            }
+        }
+	},
+	{
+        "key": "lighting_status",
+        "info": {
+            "name": {
+                "brief": "Lights (On/Off)",
+                "verbose": "Lighting Status"
+            },
+            "unit": {
+                "brief": "On/Off",
+                "verbose": "Lighting Status",
+                "type": "string"
+            }
+        }
+	}
 ]
