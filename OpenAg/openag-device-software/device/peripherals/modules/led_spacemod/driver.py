@@ -29,7 +29,7 @@ class LEDSpacemodDriver:
         config: Dict[str, Any],
         i2c_lock: threading.RLock,
         simulate: bool = False,
-        mux_simulator: Optional[MuxSimulator] = None,
+        mux_simulator: Optional[MuxSimulator] = None
     ) -> None:
         """Initializes panel."""
 
@@ -111,9 +111,11 @@ class LEDSpacemodDriver:
                 if self.is_on == False:
                     self.logger.debug("Turning on")
                     self.is_on = True
+                    return 1
                 elif self.is_on == True:
                     self.logger.debug("Turning off")
                     self.is_on = False
+                    return 0
             except:
                 raise exceptions.ToggleError(logger=self.logger)
 
@@ -122,9 +124,11 @@ class LEDSpacemodDriver:
             if self.is_on == False:
                 self.logger.debug("Turning on")
                 self.is_on = True
+                return 1
             elif self.is_on == True:
                 self.logger.debug("Turning off")
                 self.is_on = False
+                return 0
             
 
     # def turn_on(self) -> Dict[str, float]:
@@ -146,10 +150,16 @@ class LEDSpacemodDriver:
 
                 self.logger.debug("Turning off")
                 self.is_on = False
-                return 0
+                return 1
             except:
                 raise exceptions.TurnOffError(logger=self.logger)
-        return 1 #Failed to reset
+            return 0 # Failed to reset
+        else:
+            if self.simulate:
+                self.logger.debug("Turning off (hard reset)")
+                return 1 # Simulating a successful reset
+            else:
+                return 0 #Failed to reset
 
     def check_status(self):
         """Device Heartbeat Check"""

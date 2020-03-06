@@ -182,17 +182,19 @@ class LEDSpacemodManager(manager.PeripheralManager):
 
     @property
     def lighting_status(self) -> Any:
-        """Gets spectrum value."""
+        """Gets lighting status value."""
         return
 
     @lighting_status.setter
     def lighting_status(self, value: Optional[Dict[str, float]]) -> None:
-        """Sets spectrum value in shared state."""
+        """Sets lighting status value in shared state."""
         status = "OFF"
         if value == 1:
             status = "ON"
         elif value == 0:
             status = "OFF"
+        else:
+            status = "INITIALIZING"
         self.state.set_peripheral_reported_sensor_value(
             self.name, self.lighting_status_name, status
         )
@@ -208,12 +210,15 @@ class LEDSpacemodManager(manager.PeripheralManager):
 
         if self.lighting_status == 1:
             lighting_mode_name = self.lighting_on_name
-        else:
+        elif self.lighting_status == 0:
             lighting_mode_name = self.lighting_off_name
+        else:
+            # Initializing, turn on light
+            lighting_mode_name = self.lighting_on_name
         if self.mode != modes.MANUAL:
             value = self.state.get_environment_desired_sensor_value(lighting_mode_name)
             if value != None:
-                self.logger.info("Lighting On Time Value {}".format(value))
+                self.logger.info("Desired {} Value {}".format(lighting_mode_name, value))
                 return int(value)
             return None
         else:
@@ -235,8 +240,12 @@ class LEDSpacemodManager(manager.PeripheralManager):
         name = self.lighting_off_name
         if self.lighting_status == 1:
             name = self.lighting_on_name
-        else:
+        elif self.lighting_status == 0:
             name = self.lighting_off_name
+        else:
+            # Initializing, turn on light
+            name = self.lighting_on_name
+
         self.state.set_peripheral_reported_sensor_value(
             self.name, name, value
         )
@@ -262,7 +271,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
                 config=self.config,
                 i2c_lock=self.i2c_lock,
                 simulate=self.simulate,
-                mux_simulator=self.mux_simulator,
+                mux_simulator=self.mux_simulator
             )
             self.health = (100.0)
         except exceptions.DriverError as e:
@@ -274,7 +283,10 @@ class LEDSpacemodManager(manager.PeripheralManager):
         """Sets up peripheral by turning off leds."""
         self.logger.debug("Setting up")
         try:
-            self.channel_setpoints = self.driver.turn_off()
+            setup_ok = self.driver.turn_off()
+            if setup_ok:
+                # Turn the lights back on to start
+                self.lighting_status = self.driver.toggle()
             self.health = (100.0)
         except exceptions.DriverError as e:
             self.logger.exception("Unable to setup")
@@ -331,17 +343,23 @@ class LEDSpacemodManager(manager.PeripheralManager):
 
         # Check for misting timeout - must send update to device every misting cycle
         lighting_change_required = False
-        if self.desired_lighting_time != None and self.prev_lighting_time != None:
-            self.lighting_delta = time.time() - self.prev_lighting_time
-            if self.lighting_delta > self.desired_lighting_time:
-                lighting_change_required = True
-                self.prev_lighting_time = time.time()
+        if self.desired_lighting_time != None:
+            if self.prev_lighting_time != None:
+                self.lighting_delta = time.time() - self.prev_lighting_time
+            else:
+                # Initializing State
+                self.lighting_delta = 0
+            if self.lighting_delta != None:
+                if self.lighting_delta > self.desired_lighting_time:
+                    lighting_change_required = True
+                    self.prev_lighting_time = time.time()
 
         # Write outputs to hardware every misting interval if update isn't inevitable
         if lighting_change_required:
             self.logger.debug("Sending signal to toggle lights")
             self.lighting_status = self.driver.check_status() # 0: off; 1: on
-            self.driver.toggle()
+            self.logger.debug("Lighting Status: {}".format(self.lighting_status))
+            self.lighting_status = self.driver.toggle()
 
             # Update latest misting time
             self.prev_lighting_time = time.time()
@@ -367,6 +385,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
         self.prev_desired_intensity = None
         self.prev_desired_spectrum = None
         self.prev_desired_distance = None
+        self.prev_lighting_time = None
         self.lighting_status = None
         self.lighting_delta = None
 
@@ -435,7 +454,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
 
         # Turn on driver and update reported variables
         try:
-            self.driver.toggle()
+            seld.lighting_status = self.driver.toggle()
             self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
