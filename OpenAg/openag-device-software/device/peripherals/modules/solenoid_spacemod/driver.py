@@ -86,7 +86,7 @@ class SolenoidDriver:
         """
         Initialize the gpio line for a button
         """
-        if not self.simulate:
+        if not self.simulate and self.pin != None:
             try:
                 GPIO.setmode(GPIO.BOARD)
                 GPIO.setup(self.pin, GPIO.OUT)
@@ -99,13 +99,14 @@ class SolenoidDriver:
         """Turns the solenoid on and off"""
         if not self.simulate:
             try:
-                if self.pin != None:
+                if self.pin != None and self.on_time != None:
                     GPIO.output(self.pin, GPIO.HIGH)
                     # Misting on time (seconds)
                     time.sleep(self.on_time)
                     GPIO.output(self.pin, GPIO.LOW)
-                    # Misting off time (seconds)
-                    time.sleep(self.on_time)
+                    # Misting off time (seconds) 
+                    # handled by manager
+                    #time.sleep(self.on_time)
             except:
                 raise exceptions.TurnOnError(logger=self.logger)
             

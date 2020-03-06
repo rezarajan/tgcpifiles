@@ -113,12 +113,12 @@ class SolenoidManager(manager.PeripheralManager):
         if self.misting_interval == None and self.desired_misting_interval != None:
             self.misting_interval = self.desired_misting_interval
         else:
-            self.misting_interval = 600
+            self.misting_interval = 60
 
         if self.misting_on_time == None and self.desired_misting_on_time != None:
             self.misting_on_time = self.desired_misting_on_time
         else:
-            self.misting_on_time = 600
+            self.misting_on_time = 60
 
         # Initialize health
         self.health = 100.0
@@ -143,6 +143,7 @@ class SolenoidManager(manager.PeripheralManager):
         """Sets up peripheral by turning off the solenoid."""
         self.logger.debug("Setting up")
         try:
+            self.driver.setup_gpio()
             self.driver.turn_off()
             self.state.set_peripheral_reported_actuator_value(
             self.name, self.mister_on_name, self.desired_misting_on_time
@@ -168,13 +169,41 @@ class SolenoidManager(manager.PeripheralManager):
     def update_peripheral(self) -> None:
         """Updates peripheral if misting cycle changes."""
 
+        if self.misting_on_time != self.desired_misting_on_time:
+            self.misting_on_time = self.desired_misting_on_time
+
+        if self.misting_interval != self.desired_misting_interval:
+            self.misting_interval = self.desired_misting_interval
+            # Initialize driver
+            try:
+                self.driver = driver.SolenoidDriver(
+                    name=self.name,
+                    config=self.solenoid_config,
+                    i2c_lock=self.i2c_lock,
+                    simulate=self.simulate,
+                    mux_simulator=self.mux_simulator,
+                    on_time=self.misting_on_time
+                )
+                self.health = (100.0)
+            except exceptions.DriverError as e:
+                self.logger.exception("Manager unable to initialize")
+                self.health = 0.0
+                self.mode = modes.ERROR
+
         # Check for misting timeout - must send update to device every misting cycle
         misting_required = False
-        if self.desired_misting_interval != None and self.prev_misting_time != None:
-            misting_delta = time.time() - self.prev_misting_time
-            if misting_delta > (self.desired_misting_interval + self.desired_misting_on_time):
+        if self.desired_misting_interval != None:
+            if self.prev_misting_time != None:
+                self.misting_delta = time.time() - self.prev_misting_time
+            else:
+                # Initializing State
+                self.misting_delta = 0
                 misting_required = True
-                self.prev_misting_time = time.time()
+            if self.misting_delta != None:
+                self.logger.debug("Checking Misting Deltas")
+                if self.misting_delta > (self.desired_misting_interval + self.desired_misting_on_time):
+                    misting_required = True
+                    self.prev_misting_time = time.time()
 
         # Write outputs to hardware every misting interval if update isn't inevitable
         if misting_required:
@@ -193,6 +222,7 @@ class SolenoidManager(manager.PeripheralManager):
         """Clears reported values."""
         self.misting_interval = None
         self.misting_on_time = None
+        self.misting_delta = None
         self.prev_misting_time = None
 
 
