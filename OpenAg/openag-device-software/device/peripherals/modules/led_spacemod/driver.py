@@ -165,5 +165,5 @@ class LEDSpacemodDriver:
         """Device Heartbeat Check"""
         if self.is_on == True:
             return 1
-        if self.is_on == False:
+        else:
             return 0

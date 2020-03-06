@@ -287,6 +287,8 @@ class LEDSpacemodManager(manager.PeripheralManager):
             if setup_ok:
                 # Turn the lights back on to start
                 self.lighting_status = self.driver.toggle()
+                self.prev_lighting_time = time.time()
+                self.logger.debug("Setup OK")
             self.health = (100.0)
         except exceptions.DriverError as e:
             self.logger.exception("Unable to setup")
@@ -349,6 +351,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
             else:
                 # Initializing State
                 self.lighting_delta = 0
+                lighting_change_required = True
             if self.lighting_delta != None:
                 if self.lighting_delta > self.desired_lighting_time:
                     lighting_change_required = True
@@ -357,15 +360,14 @@ class LEDSpacemodManager(manager.PeripheralManager):
         # Write outputs to hardware every misting interval if update isn't inevitable
         if lighting_change_required:
             self.logger.debug("Sending signal to toggle lights")
-            self.lighting_status = self.driver.check_status() # 0: off; 1: on
+            self.lighting_status = self.driver.toggle() # 0: off; 1: on
             self.logger.debug("Lighting Status: {}".format(self.lighting_status))
-            self.lighting_status = self.driver.toggle()
-
             # Update latest misting time
             self.prev_lighting_time = time.time()
 
         # Check if update is required
         if not lighting_change_required:
+            self.logger.debug("Lighting is still in a cycle")
             return
 
         # Update prev desired values
