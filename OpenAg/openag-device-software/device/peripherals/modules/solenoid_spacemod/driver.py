@@ -99,9 +99,11 @@ class SolenoidDriver:
             try:
                 if self.pin != None:
                     GPIO.output(self.pin, GPIO.HIGH)
-                    # Misting on time
-                    time.sleep(10000)
+                    # Misting on time (seconds)
+                    time.sleep(10)
                     GPIO.output(self.pin, GPIO.LOW)
+                    # Misting off time (seconds)
+                    time.sleep(10)
             except:
                 raise exceptions.TurnOnError(logger=self.logger)
             
