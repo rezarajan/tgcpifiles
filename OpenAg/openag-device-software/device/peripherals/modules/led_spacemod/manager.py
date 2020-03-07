@@ -283,6 +283,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
         """Sets up peripheral by turning off leds."""
         self.logger.debug("Setting up")
         try:
+            self.driver.setup_gpio()
             setup_ok = self.driver.turn_off()
             if setup_ok:
                 # Turn the lights back on to start
@@ -360,6 +361,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
         # Write outputs to hardware every misting interval if update isn't inevitable
         if lighting_change_required:
             self.logger.debug("Sending signal to toggle lights")
+            self.driver.setup_gpio()
             self.lighting_status = self.driver.toggle() # 0: off; 1: on
             self.logger.debug("Lighting Status: {}".format(self.lighting_status))
             # Update latest misting time
@@ -456,7 +458,8 @@ class LEDSpacemodManager(manager.PeripheralManager):
 
         # Turn on driver and update reported variables
         try:
-            seld.lighting_status = self.driver.toggle()
+            self.driver.setup_gpio()
+            self.lighting_status = self.driver.toggle()
             self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
@@ -492,7 +495,8 @@ class LEDSpacemodManager(manager.PeripheralManager):
 
         # Turn off driver and update reported variables
         try:
-            self.channel_setpoints = self.driver.turn_off()
+            self.driver.setup_gpio()
+            self.lighting_status = self.driver.turn_off()
             self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR

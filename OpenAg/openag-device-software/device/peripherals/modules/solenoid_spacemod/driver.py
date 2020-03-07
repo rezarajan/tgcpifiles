@@ -2,6 +2,7 @@
 import os, time, threading
 try:
     import RPi.GPIO as GPIO
+    pi_gpio_available = True
 except ImportError:
     pi_gpio_available = False
 
@@ -30,7 +31,7 @@ class SolenoidDriver:
         i2c_lock: threading.RLock,
         simulate: bool = False,
         mux_simulator: Optional[MuxSimulator] = None,
-        on_time: Optional[float] = 600,
+        on_time: Optional[float] = 60,
     ) -> None:
         """Initializes panel."""
 
@@ -86,7 +87,7 @@ class SolenoidDriver:
         """
         Initialize the gpio line for a button
         """
-        if not self.simulate and self.pin != None:
+        if not self.simulate and self.pin != None and pi_gpio_available:
             try:
                 GPIO.setmode(GPIO.BOARD)
                 GPIO.setup(self.pin, GPIO.OUT)
@@ -99,7 +100,7 @@ class SolenoidDriver:
         """Turns the solenoid on and off"""
         if not self.simulate:
             try:
-                if self.pin != None and self.on_time != None:
+                if self.pin != None and self.on_time != None and pi_gpio_available:
                     GPIO.output(self.pin, GPIO.HIGH)
                     # Misting on time (seconds)
                     time.sleep(self.on_time)
@@ -116,7 +117,7 @@ class SolenoidDriver:
         """Hard reset for the solenoid"""
         if not self.simulate:
             try:
-                if self.pin != None:
+                if self.pin != None and pi_gpio_available:
                     GPIO.output(self.pin, GPIO.LOW)      
             except:
                 raise exceptions.TurnOffError(logger=self.logger)

@@ -2,6 +2,7 @@
 import os, time, threading
 try:
     import RPi.GPIO as GPIO
+    pi_gpio_available = True
 except ImportError:
     pi_gpio_available = False
 
@@ -89,7 +90,7 @@ class LEDSpacemodDriver:
         """
         Initialize the gpio line for a button
         """
-        if self.pin != None and not self.simulate:
+        if self.pin != None and pi_gpio_available and not self.simulate:
             try:
 
                 GPIO.setmode(GPIO.BOARD)
@@ -97,50 +98,32 @@ class LEDSpacemodDriver:
                 return
             except:
                 raise exceptions.GPIOSetupError(logger=self.logger)
+            
 
-
-    def toggle(self) -> Dict[str, float]:
-        """Toggles LED Soft Latch"""
-        if self.pin != None and not self.simulate:
+    def turn_on(self) -> Dict[str, float]:
+        if self.pin != None and pi_gpio_available and not self.simulate:
+            """Sets Soft Latch On"""
             try:
                 GPIO.output(self.pin, GPIO.HIGH)
                 # Soft Latch RC Time
                 time.sleep(0.1)
                 GPIO.output(self.pin, GPIO.LOW)
 
-                if self.is_on == False:
-                    self.logger.debug("Turning on")
-                    self.is_on = True
-                    return 1
-                elif self.is_on == True:
-                    self.logger.debug("Turning off")
-                    self.is_on = False
-                    return 0
-            except:
-                raise exceptions.ToggleError(logger=self.logger)
-
-        
-        if self.simulate:
-            if self.is_on == False:
                 self.logger.debug("Turning on")
                 self.is_on = True
                 return 1
-            elif self.is_on == True:
-                self.logger.debug("Turning off")
-                self.is_on = False
-                return 0
-            
-
-    # def turn_on(self) -> Dict[str, float]:
-    #     """Toggles LED Soft Latch On"""
-    #     if self.is_on == False:
-    #         self.toggle()
-    #         self.logger.debug("Turning on")
-    #         self.is_on = True
-    #         return 100
+            except:
+                raise exceptions.TurnOffError(logger=self.logger)
+            return 0 # Failed to reset
+        else:
+            if self.simulate:
+                self.logger.debug("Turning on ")
+                return 1 # Simulating a successful latch set
+            else:
+                return 0 #Failed to set latch
 
     def turn_off(self) -> Dict[str, float]:
-        if self.hard_reset_pin != None and not self.simulate:
+        if self.hard_reset_pin != None and pi_gpio_available and not self.simulate:
             """Drains LED Soft Latch - Reset"""
             try:
                 GPIO.output(self.hard_reset_pin, GPIO.HIGH)
@@ -161,9 +144,29 @@ class LEDSpacemodDriver:
             else:
                 return 0 #Failed to reset
 
-    def check_status(self):
-        """Device Heartbeat Check"""
-        if self.is_on == True:
-            return 1
-        else:
-            return 0
+    def toggle(self) -> Dict[str, float]:
+            """Toggles LED Soft Latch"""
+            if self.pin != None and pi_gpio_available and not self.simulate:
+                try:
+                    if self.is_on == False:
+                        self.logger.debug("Turning on")
+                        self.turn_on()
+                        return 1
+                    elif self.is_on == True:
+                        self.logger.debug("Turning off")
+                        self.turn_off()
+                        return 0
+                except:
+                    raise exceptions.ToggleError(logger=self.logger)
+
+            
+            if self.simulate:
+                if self.is_on == False:
+                    self.logger.debug("Turning on")
+                    self.is_on = True
+                    return 1
+                elif self.is_on == True:
+                    self.logger.debug("Turning off")
+                    self.is_on = False
+                    return 0
+
