@@ -23,8 +23,7 @@
                     "mux": "none", 
                     "is_active_high": true,
                     "port": "none",
-                    "pin": 16,
-                    "hard_reset_pin": 22
+                    "pin": 16
                 }
             }
         },
@@ -55,7 +54,8 @@
                     "mux": "none", 
                     "is_active_high": true,
                     "port": "none",
-                    "pin": 18
+                    "pin": 18,
+                    "hard_reset_pin": 22
                 }
             }
         }

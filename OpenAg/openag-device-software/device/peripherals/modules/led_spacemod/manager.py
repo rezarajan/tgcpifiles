@@ -17,7 +17,6 @@ class LEDSpacemodManager(manager.PeripheralManager):
     prev_desired_distance: Optional[float] = None
     prev_heartbeat_time: float = 0
     heartbeat_interval: float = 60  # seconds -> every minute
-    prev_lighting_time: float = 0
     prev_reinit_time: float = 0
     reinit_interval: float = 300  # seconds -> every 5 minutes
 
@@ -230,6 +229,17 @@ class LEDSpacemodManager(manager.PeripheralManager):
             return None
 
     @property
+    def prev_lighting_time(self) -> Any:
+        """Gets lighting status value."""
+        return
+
+    @prev_lighting_time.setter
+    def prev_lighting_time(self, value: Optional[Dict[str, float]]) -> None:
+        """Sets previous lighting time."""
+
+        self.logger.debug("Previous Lighting Time {}".format(value))       
+
+    @property
     def lighting_delta(self) -> Any:
         """Gets spectrum value."""
         return
@@ -349,6 +359,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
         if self.desired_lighting_time != None:
             if self.prev_lighting_time != None:
                 self.lighting_delta = time.time() - self.prev_lighting_time
+                self.logger.debug("Part 1")
             else:
                 # Initializing State
                 self.lighting_delta = 0
@@ -357,6 +368,7 @@ class LEDSpacemodManager(manager.PeripheralManager):
                 if self.lighting_delta > self.desired_lighting_time:
                     lighting_change_required = True
                     self.prev_lighting_time = time.time()
+                    self.logger.debug("Part 2")
 
         # Write outputs to hardware every misting interval if update isn't inevitable
         if lighting_change_required:

@@ -95,6 +95,7 @@ class LEDSpacemodDriver:
 
                 GPIO.setmode(GPIO.BOARD)
                 GPIO.setup(self.pin, GPIO.OUT)
+                GPIO.setup(self.hard_reset_pin, GPIO.OUT)
                 return
             except:
                 raise exceptions.GPIOSetupError(logger=self.logger)
