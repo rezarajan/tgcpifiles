@@ -1,0 +1,119 @@
+{
+	"name":  "SpaceVAC",
+	"version": "1",
+	"uuid": "c542c191-b639-4f6c-9c3f-f9cc5644dcb7",
+	"module_name": "spacevac.manager",
+	"class_name": "SpaceVACManager",
+	"parameters": {
+		"variables": {
+			"sensor": {
+
+				"air_temperature_celsius": {
+					"name": {
+						"type": "string",
+						"default": "air_temperature_celsius"
+					}
+				}
+			},
+			"actuator": {
+				"spacevac_status": {
+					"name": {
+						"type": "string",
+						"default": "spacevac_status"
+					}
+				}
+
+			}
+		},	
+		"communication": {
+			"devices": [
+				{
+					"bus": {
+						"type": "integer",
+						"default": "none"
+					},
+					"mux": {
+						"type": "string",
+						"default": "none"
+					},
+					"is_active_high": {
+						"type": "boolean",
+						"default": true
+					},
+					"address": {
+						"type": "integer",
+						"default": "none"
+					},
+					"port": {
+						"type": "integer",
+						"default": "none"
+					},
+					"fan_pin": {
+						"type": "integer",
+						"default": 4
+					},
+					"heater_pin": {
+						"type": "integer",
+						"default": 5
+					}
+				}
+			]
+		}
+	},
+	"events": [
+		{
+		    "name": "Reset",
+		    "description": "Reset sensor.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Shutdown",
+		    "description": "Shutdown sensor.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Set Sampling Interval",
+		    "description": "Sets sampling interval.",
+		    "value": {
+		        "default": 10,
+		        "unit": "Seconds"
+		    },
+		    "sequence": null
+		},
+		{
+		    "name": "Enable Manual Mode",
+		    "description": "Allows actuator to be controlled by manual events.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Heat",
+		    "description": "Turns on the heater and fan",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": false
+		},
+		{
+		    "name": "Cool",
+		    "description": "Turns off the heater and turns on the fan",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": false
+		},
+		{
+		    "name": "Turn Off",
+		    "description": "Turns off all channels on light panel.",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": false
+		}
+	],
+	"info": {
+		"variables": {
+			"sensors": null,
+			"actuators":null
+		}
+	}
+}

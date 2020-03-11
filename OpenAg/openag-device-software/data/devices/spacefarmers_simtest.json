@@ -58,6 +58,56 @@
                     "hard_reset_pin": 22
                 }
             }
+        },
+        {
+            "name": "SpaceVAC",
+            "type": "SpaceVAC",
+            "uuid": "c542c191-b639-4f6c-9c3f-f9cc5644dcb7",
+            "parameters": {
+               "setup": {
+                    "name": "SpaceVAC",
+                    "file_name": "spacevac/setups/spacemod"
+                },
+                "variables": {
+                    "sensor": {
+                        "air_temperature_celsius": "air_temperature_celsius"
+                    },
+                    "actuator": {
+                        "spacevac_status": "spacevac_status"
+                    }
+                },
+                "communication": {
+                    "bus": "none", 
+                    "mux": "none", 
+                    "is_active_high": true,
+                    "port": "none",
+                    "fan_pin": 18,
+                    "heater_pin": 22
+                }
+            }
+        },
+        {
+            "name": "AtlasTemp-Air",
+            "type": "AtlasTemp",
+            "uuid": "9e96cad1-fe29-4e2b-acdd-65d0288b50a3",
+            "parameters": {
+                "setup": {
+                    "name": "Atlas Temperature Sensor Default",
+                    "file_name": "atlas_temp/setups/default"
+                },
+                "variables": {
+                    "sensor": {
+                        "temperature": "air_temperature_celsius"
+                    },
+                    "actuator": null
+                },
+                "communication": {
+                    "bus": "default", 
+                    "mux": "default", 
+                    "channel": 6, 
+                    "address": "0x66"
+                }
+            }
         }
     ],
     "controllers": null

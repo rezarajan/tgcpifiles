@@ -320,5 +320,19 @@
                 "type": "string"
             }
         }
+	},
+	{
+        "key": "spacevac_status",
+        "info": {
+            "name": {
+                "brief": "SpaceVAC (On/Off)",
+                "verbose": "SpaceVAC Status"
+            },
+            "unit": {
+                "brief": "On/Off",
+                "verbose": "SpaceVAC Status",
+                "type": "string"
+            }
+        }
 	}
 ]
