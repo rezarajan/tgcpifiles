@@ -95,6 +95,9 @@ class SolenoidDriver:
             except:
                 raise exceptions.GPIOSetupError(logger=self.logger)
 
+        if not pi_gpio_available and not self.simulate:
+            raise exceptions.GPIOSetupError(logger=self.logger)
+
 
     def turn_on(self) -> Dict[str, float]:
         """Turns the solenoid on and off"""

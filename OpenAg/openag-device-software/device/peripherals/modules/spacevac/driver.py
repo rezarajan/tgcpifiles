@@ -96,8 +96,12 @@ class SpaceVACDriver:
                 GPIO.setup(self.fan_pin, GPIO.OUT)
                 GPIO.setup(self.heater_pin, GPIO.OUT)
                 return
-            except:
-                raise exceptions.GPIOSetupError(logger=self.logger)
+            except Exception as e:
+                raise exceptions.GPIOSetupError(logger=self.logger) from e
+
+
+        if not pi_gpio_available and not self.simulate:
+            raise exceptions.GPIOSetupError(logger=self.logger)
             
 
     def heat(self) -> Dict[str, float]:
@@ -110,8 +114,8 @@ class SpaceVACDriver:
 
                 self.logger.debug("Turning on heater and fan")
                 return 1
-            except:
-                raise exceptions.TurnOffError(logger=self.logger)
+            except Exception as e:
+                raise exceptions.TurnOffError(logger=self.logger) from e
             return 0 # Failed to reset
         else:
             if self.simulate:
@@ -130,8 +134,8 @@ class SpaceVACDriver:
 
                 self.logger.debug("Turning OFF heater, Turning ON Fan")
                 return 1
-            except:
-                raise exceptions.TurnOffError(logger=self.logger)
+            except Exception as e:
+                raise exceptions.TurnOffError(logger=self.logger) from e
             return 0 # Failed to reset
         else:
             if self.simulate:
@@ -151,8 +155,8 @@ class SpaceVACDriver:
 
                 self.logger.debug("Turning off the SpaceVAC")
                 return 1
-            except:
-                raise exceptions.TurnOffError(logger=self.logger)
+            except Exception as e:
+                raise exceptions.TurnOffError(logger=self.logger) from e
             return 0 # Failed to reset
         else:
             if self.simulate:
