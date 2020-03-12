@@ -87,25 +87,27 @@
             }
         },
         {
-            "name": "AtlasTemp-Air",
-            "type": "AtlasTemp",
-            "uuid": "9e96cad1-fe29-4e2b-acdd-65d0288b50a3",
+            "name": "DHT22-Top",
+            "type": "DHT22",
+            "uuid": "5a420aa5-c2ce-400c-abdd-73347b9838ad",
             "parameters": {
                 "setup": {
-                    "name": "Atlas Temperature Sensor Default",
-                    "file_name": "atlas_temp/setups/default"
+                    "name": "DHT22 Temperature / Humidity Sensor Default",
+                    "file_name": "dht22/setups/default"
                 },
                 "variables": {
                     "sensor": {
-                        "temperature": "air_temperature_celsius"
+                        "temperature_celsius": "air_temperature_celsius",
+                        "humidity_percent": "air_humidity_percent"                    
                     },
                     "actuator": null
                 },
                 "communication": {
                     "bus": "default", 
                     "mux": "default", 
-                    "channel": 6, 
-                    "address": "0x66"
+                    "channel": 2, 
+                    "address": "0x40",
+                    "pin": 4
                 }
             }
         }

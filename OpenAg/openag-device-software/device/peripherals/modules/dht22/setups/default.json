@@ -1,0 +1,99 @@
+{
+	"name":  "DHT22 Temperature / Humidity Sensor",
+	"version": "1",
+	"uuid": "5a420aa5-c2ce-400c-abdd-73347b9838ad",
+	"module_name": "dht22.manager",
+	"class_name": "DHT22Manager",
+	"parameters": {
+		"variables": {
+			"sensor": {
+				"temperature_celsius": {
+					"name": {
+						"type": "string", 
+						"default": "air_temperature_celsius"
+					}
+				},
+				"humidity_percent": {
+					"name": {
+						"type": "string",
+						"default": "air_humidity_percent"
+					}
+				}
+			},
+			"actuator": null
+		},	
+		"communication": {
+			"bus": {
+				"type": "integer",
+				"default": 2
+			},
+			"mux": {
+				"type": "string",
+				"default": "0x77"
+			},
+			"channel": {
+				"type": "integer",
+				"default": 1
+			},
+			"address": {
+				"type": "string",
+				"default": "0x40"
+			},
+			"pin": {
+				"type": "integer",
+				"default": 4
+			}
+		}
+	},
+	"events": [
+	    {
+	        "name": "Reset",
+	        "description": "Reset sensor.",
+	        "value": null,
+	        "sequence": null
+		},
+		{
+		    "name": "Enable Manual Mode",
+		    "description": "Allows actuator to be controlled by manual events.",
+		    "value": null,
+		    "sequence": null
+		},
+	    {
+	        "name": "Set Sampling Interval",
+	        "description": "Sets sampling interval.",
+	        "value": {
+	            "default": 10,
+	            "unit": "Seconds"
+	        },
+	        "sequence": null
+	    }
+	],
+	"info": {
+		"variables": {
+			"sensor":{
+				"temperature_celsius": {
+					"range": [-40, 125],
+			        "accuracy": {
+			            "typical": 0.2,
+			            "plot": [[-40, 0.5],[5,0.2],[60,0.2],
+			            	[100,0.5],[120,0.7]]   
+			        },
+			        "repeatability": 0.1,
+			        "response_time_seconds": 15,
+			        "yearly_drift": 0.02
+				},
+				"humidity_percent": {
+                    "range": [0, 100],
+                    "accuracy": {
+                        "typical": 1.8,
+                        "plot": [[0,3],[10,2],[90,2],[100,3]]
+                    },
+                    "repeatability": 0.1,
+                    "response_time_seconds": 8,
+                    "yearly_drift": 0.25
+				}
+			},
+			"actuator": null
+		}
+	}
+}
