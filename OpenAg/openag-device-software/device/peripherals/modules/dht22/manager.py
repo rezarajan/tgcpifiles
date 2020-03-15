@@ -36,7 +36,7 @@ class DHT22Manager(manager.PeripheralManager):
     @temperature.setter
     def temperature(self, value: float) -> None:
         """Sets temperature value in shared state. Does not update environment from 
-        calibration mode."""
+        calibration mode."""        
         self.state.set_peripheral_reported_sensor_value(
             self.name, self.temperature_name, value
         )
@@ -106,6 +106,7 @@ class DHT22Manager(manager.PeripheralManager):
         # Read temperature
         try:
             temperature = self.driver.read_temperature()
+            self.logger.debug("Air Temperature: {}".format(temperature))
         except exceptions.DriverError as e:
             self.logger.debug("Unable to read temperature: {}".format(e))
             self.mode = modes.ERROR

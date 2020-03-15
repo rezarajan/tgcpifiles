@@ -69,7 +69,9 @@
                 },
                 "variables": {
                     "sensor": {
-                        "air_temperature_celsius": "air_temperature_celsius"
+                        "air_temperature_celsius": "air_temperature_celsius",
+                        "air_humidity_percent": "air_humidity_percent",
+                        "root_temperature_celsius": "root_temperature_celsius"
                     },
                     "actuator": {
                         "spacevac_status": "spacevac_status"
@@ -81,7 +83,8 @@
                     "is_active_high": true,
                     "port": "none",
                     "fan_pin": 18,
-                    "heater_pin": 22
+                    "fan_root_pin": 22,
+                    "heater_pin": 23
                 }
             }
         },
@@ -121,7 +124,7 @@
                 },
                 "variables": {
                     "sensor": {
-                        "temperature": "water_temperature_celsius"
+                        "temperature": "root_temperature_celsius"
                     },
                     "actuator": null
                 },

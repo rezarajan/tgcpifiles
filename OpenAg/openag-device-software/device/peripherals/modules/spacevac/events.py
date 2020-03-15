@@ -1,1 +1,6 @@
+COOL = "Cool"
+HEAT = "Heat"
+TURN_OFF = "Turn Off"
+COOL_ROOTS = "Cool Roots"
+TURN_OFF_ROOTS = "Turn Off Root Zone"
 RESET = "Reset"

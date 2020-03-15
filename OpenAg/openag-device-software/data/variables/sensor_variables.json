@@ -14,6 +14,20 @@
 		}
 	},
 	{
+		"key": "root_temperature_celsius",
+		"info": {
+			"name": {
+				"brief": "Root Temp",
+				"verbose": "Root Temperature"
+			},
+			"unit": {
+				"brief": "C",
+				"verbose": "Celsius",
+				"type": "number"
+			}
+		}
+	},
+	{
 		"key": "air_humidity_percent",
 		"info": {
 			"name": {

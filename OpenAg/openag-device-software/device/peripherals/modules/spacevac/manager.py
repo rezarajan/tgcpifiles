@@ -28,7 +28,8 @@ class SpaceVACManager(manager.PeripheralManager):
 
         # Initialize variable names
         self.temperature_name = self.variables["sensor"]["air_temperature_celsius"]
-        # self.humidity_name = self.variables["sensor"]["spectrum_nm_percent"]
+        self.humidity_name = self.variables["sensor"]["air_humidity_percent"]
+        self.temperature_root_name = self.variables["sensor"]["root_temperature_celsius"]
 
         self.spacevac_status_name = self.variables["actuator"]["spacevac_status"]
 
@@ -56,6 +57,60 @@ class SpaceVACManager(manager.PeripheralManager):
         else:
             value = self.state.get_peripheral_reported_sensor_value(
                 self.name, self.temperature_name
+            )
+            if value != None:
+                return float(value)
+            return None   
+
+    @property
+    def humidity(self) -> Optional[float]:
+        """Gets compensation temperature value from shared environment state."""
+        value = self.state.get_environment_reported_sensor_value(self.humidity_name)
+        if value != None:
+            self.logger.debug(float(value))
+            return float(value)
+        return None
+
+    @property
+    def desired_humidity(self) -> Optional[float]:
+        """Gets desired distance value from shared environment state if not 
+        in manual mode, otherwise gets it from peripheral state."""
+        if self.mode != modes.MANUAL:
+            value = self.state.get_environment_desired_sensor_value(self.humidity_name)
+            if value != None:
+                self.logger.debug(float(value))
+                return float(value)
+            return None
+        else:
+            value = self.state.get_peripheral_reported_sensor_value(
+                self.name, self.humidity_name
+            )
+            if value != None:
+                return float(value)
+            return None   
+
+    @property
+    def root_temperature(self) -> Optional[float]:
+        """Gets compensation temperature value from shared environment state."""
+        value = self.state.get_environment_reported_sensor_value(self.temperature_root_name)
+        if value != None:
+            self.logger.debug(float(value))
+            return float(value)
+        return None
+    
+    @property
+    def desired_root_temperature(self) -> Optional[float]:
+        """Gets desired distance value from shared environment state if not 
+        in manual mode, otherwise gets it from peripheral state."""
+        if self.mode != modes.MANUAL:
+            value = self.state.get_environment_desired_sensor_value(self.temperature_root_name)
+            if value != None:
+                self.logger.debug(float(value))
+                return float(value)
+            return None
+        else:
+            value = self.state.get_peripheral_reported_sensor_value(
+                self.name, self.temperature_root_name
             )
             if value != None:
                 return float(value)
@@ -134,6 +189,7 @@ class SpaceVACManager(manager.PeripheralManager):
         # Initialize update flag
         heating_required = False
         cooling_required = False
+        cooling_roots_required = False
 
         # Check for new desired temperature
         if (
@@ -143,30 +199,41 @@ class SpaceVACManager(manager.PeripheralManager):
             self.logger.info("Temperature too low, Heating!")
             heating_required = True
 
-        if (
+        elif (
             self.temperature != None and self.desired_temperature != None
             and self.temperature > self.desired_temperature + 0.0
+        ):
+            self.logger.info("Temperature too low, Cooling!")
+            cooling_required = True
+
+        if (
+            self.humidity != None and self.desired_humidity != None and not heating_required
+            and self.humidity < self.desired_humidity
         ):
             self.logger.info("Humidity too low, Cooling!")
             cooling_required = True
 
-        # # Check for new desired humidity
-        # if (
-        #     self.humidity != None
-        #     and self.humidity < self.desired_min_humidity
-        #     and not heating_required
-        # ):
-        #     self.logger.info("Humidity too low, Cooling!")
-        #     cooling_required = True
+        elif (
+            self.humidity != None and self.desired_humidity != None and not cooling_required
+            and self.humidity > self.desired_humidity + 0.0
+        ):
+            self.logger.info("Humidity too low, Heating!")
+            heating_required = True
 
-        # if (
-        #     self.humidity != None
-        #     and self.humidity > self.desired_max_humidity
-        #     and not cooling_required
-        # ):
-        #     self.logger.info("Humidity too low, Heating!")
-        #     heating_required = True
+        if (
+            self.root_temperature != None and self.desired_root_temperature != None
+            and self.temperature < self.desired_temperature
+        ):
+            self.logger.info("Root Zone Temperature too low, Stopping Root Zone Cooling!")
+            cooling_required = False
 
+        elif (
+            self.root_temperature != None and self.desiredroot__temperature != None
+            and self.temperature > self.desired_temperature + 0.0
+        ):
+            self.logger.info("Root Zone Temperature too high, Cooling the Root Zone!")
+            cooling_required = True
+        
 
         # Check if all desired values exist:
         all_desired_values_exist = True
@@ -307,6 +374,44 @@ class SpaceVACManager(manager.PeripheralManager):
             message = "Unable to turn on, unhandled exception"
             self.logger.exception(message)
 
+    def cool_roots(self) -> Tuple[str, int]:
+        """Pre-processes turn on event request."""
+        self.logger.debug("Pre-processing turn on event request")
+
+        # Require mode to be in manual
+        if self.mode != modes.MANUAL:
+            return "Must be in manual mode", 400
+
+        # Add event request to event queue
+        request = {"type": events.COOL_ROOTS}
+        self.event_queue.put(request)
+
+        # Successfully turned on
+        return "Heating", 200
+
+    def _cool_roots(self) -> None:
+        """Processes turn on event request."""
+        self.logger.debug("Processing turn on event request")
+
+        # Require mode to be in manual
+        if self.mode != modes.MANUAL:
+            self.logger.critical("Tried to turn on from {} mode".format(self.mode))
+
+        # Turn on driver and update reported variables
+        try:
+            self.driver.setup_gpio()
+            self.driver.cool_roots()
+            self.spacevac_status = 0
+            # self.update_reported_variables()
+        except exceptions.DriverError as e:
+            self.mode = modes.ERROR
+            message = "Unable to turn on: {}".format(e)
+            self.logger.debug(message)
+        except:
+            self.mode = modes.ERROR
+            message = "Unable to turn on, unhandled exception"
+            self.logger.exception(message)
+
     def turn_off(self) -> Tuple[str, int]:
         """Pre-processes turn off event request."""
         self.logger.debug("Pre-processing turn off event request")
@@ -334,6 +439,44 @@ class SpaceVACManager(manager.PeripheralManager):
         try:
             self.driver.setup_gpio()
             self.lighting_status = self.driver.turn_off()
+            self.spacevac_status = 2
+            # self.update_reported_variables()
+        except exceptions.DriverError as e:
+            self.mode = modes.ERROR
+            message = "Unable to turn off: {}".format(e)
+            self.logger.debug(message)
+        except:
+            self.mode = modes.ERROR
+            message = "Unable to turn off, unhandled exception"
+            self.logger.exception(message)
+
+    def turn_off_roots(self) -> Tuple[str, int]:
+        """Pre-processes turn off event request."""
+        self.logger.debug("Pre-processing turn off event request")
+
+        # Require mode to be in manual
+        if self.mode != modes.MANUAL:
+            return "Must be in manual mode", 400
+
+        # Add event request to event queue
+        request = {"type": events.TURN_OFF_ROOTS}
+        self.event_queue.put(request)
+
+        # Successfully turned off
+        return "Turning off", 200
+
+    def _turn_off_roots(self) -> None:
+        """Processes turn off event request."""
+        self.logger.debug("Processing turn off event request")
+
+        # Require mode to be in manual
+        if self.mode != modes.MANUAL:
+            self.logger.critical("Tried to turn off from {} mode".format(self.mode))
+
+        # Turn off driver and update reported variables
+        try:
+            self.driver.setup_gpio()
+            self.lighting_status = self.driver.turn_off_roots()
             self.spacevac_status = 2
             # self.update_reported_variables()
         except exceptions.DriverError as e:

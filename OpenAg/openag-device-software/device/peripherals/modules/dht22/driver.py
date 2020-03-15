@@ -61,7 +61,7 @@ class DHT22Driver:
 
     def read_temperature(self, retry: bool = True) -> Optional[float]:
         """ Reads temperature value."""
-        self.logger.debug("Reading temperature")
+        self.logger.debug("Reading humidity value from hardware")
         if import_ok and not self.simulate:
             try:
                 _, temperature = Adafruit_DHT.read_retry(self.DHT_SENSOR, self.pin)
@@ -77,14 +77,16 @@ class DHT22Driver:
             except:
                     raise exceptions.ReadTemperatureError(logger=self.logger)
         else:
-            return 27.0
+            temperature = 27.0
+            self.logger.debug("Temperature: {} C".format(temperature))
+            return temperature
 
     def read_humidity(self, retry: bool = True) -> Optional[float]:
         """Reads humidity value."""
         self.logger.debug("Reading humidity value from hardware")
         if import_ok and not self.simulate:
             try:
-                _, temperature = Adafruit_DHT.read_retry(self.DHT_SENSOR, self.pin)
+                humidity, _ = Adafruit_DHT.read_retry(self.DHT_SENSOR, self.pin)
 
                 # Verify humidity value within valid range
                 if humidity > self.min_humidity and humidity < self.min_humidity:
@@ -97,7 +99,9 @@ class DHT22Driver:
             except:
                     raise exceptions.ReadHumidityError(logger=self.logger)
         else:
-            return 31.0
+            humidity = 61.0
+            self.logger.debug("Humidity: {} %".format(humidity))
+            return humidity
 
 
     def reset(self, retry: bool = True) -> Optional[float]:
