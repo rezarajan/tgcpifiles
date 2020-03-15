@@ -84,8 +84,8 @@
                     "is_active_high": true,
                     "port": "none",
                     "fan_pin": 18,
-                    "fan_root_pin": 22,
                     "heater_pin": 23,
+                    "fan_root_pin": 22,
                     "humidifier_pin": 24
                 }
             }

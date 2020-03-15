@@ -208,10 +208,11 @@ class SpaceVACManager(manager.PeripheralManager):
         self.logger.debug("Setting up")
         try:
             self.driver.setup_gpio()
-            setup_ok = self.driver.turn_off() or self.driver.turn_off_roots()
+            setup_ok = self.driver.turn_off() and self.driver.turn_off_roots()
             if setup_ok:
                 self.logger.debug("Setup OK")
-                self.spacevac_canopy_status = 2
+                self.spacevac_canopy_status = 0
+                self.spacevac_root_status = 0
             self.health = (100.0)
         except exceptions.DriverError as e:
             self.logger.exception("Unable to setup")
@@ -279,15 +280,15 @@ class SpaceVACManager(manager.PeripheralManager):
                     self.logger.debug("Sending signal to cool")
                     self.driver.setup_gpio()
                     self.driver.cool()
-                    self.spacevac_canopy_status = 0
+                    self.spacevac_canopy_status = 1
             if heating_required:
                     self.logger.debug("Sending signal to heat")
                     self.driver.setup_gpio()
                     self.driver.heat()
-                    self.spacevac_canopy_status = 1
+                    self.spacevac_canopy_status = 2
         else:
             self.driver.turn_off()
-            self.spacevac_canopy_status = 2
+            self.spacevac_canopy_status = 0
             self.logger.debug("Turning off")
             return
 
@@ -365,7 +366,7 @@ class SpaceVACManager(manager.PeripheralManager):
         try:
             self.driver.setup_gpio()
             self.driver.heat()
-            self.spacevac_canopy_status = 1
+            self.spacevac_canopy_status = 2
             # self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
@@ -403,7 +404,7 @@ class SpaceVACManager(manager.PeripheralManager):
         try:
             self.driver.setup_gpio()
             self.driver.cool()
-            self.spacevac_canopy_status = 0
+            self.spacevac_canopy_status = 1
             # self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
