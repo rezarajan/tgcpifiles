@@ -85,7 +85,8 @@
                     "port": "none",
                     "fan_pin": 18,
                     "fan_root_pin": 22,
-                    "heater_pin": 23
+                    "heater_pin": 23,
+                    "humidifier_pin": 24
                 }
             }
         },

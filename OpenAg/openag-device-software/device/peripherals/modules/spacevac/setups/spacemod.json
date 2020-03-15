@@ -61,7 +61,16 @@
 					"heater_pin": {
 						"type": "integer",
 						"default": 5
+					},
+					"fan_pin_roots": {
+						"type": "integer",
+						"default": 6
+					},
+					"humidifier_pin": {
+						"type": "integer",
+						"default": 7
 					}
+					
 				}
 			]
 		}

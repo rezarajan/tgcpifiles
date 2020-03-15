@@ -43,6 +43,7 @@ class SpaceVACDriver:
         self.port = config.get("port")
         self.fan_pin = config.get("fan_pin")
         self.fan_pin_roots = config.get("fan_pin_roots")
+        self.humidifier_pin = config.get("humidifier_pin")
         self.heater_pin = config.get("heater_pin")
         self.i2c_lock = i2c_lock
         self.simulate = simulate
@@ -86,6 +87,9 @@ class SpaceVACDriver:
         if self.fan_pin_roots != None:
             self.fan_pin_roots = int(self.fan_pin_roots)
 
+        if self.humidifier_pin != None:
+            self.humidifier_pin = int(self.humidifier_pin)
+
         if self.heater_pin != None:
             self.heater_pin = int(self.heater_pin)    
 
@@ -93,12 +97,13 @@ class SpaceVACDriver:
         """
         Initialize the gpio line for a button
         """
-        if self.fan_pin != None and self.fan_pin_roots != None and self.heater_pin != None and pi_gpio_available and not self.simulate:
+        if self.fan_pin != None and self.fan_pin_roots != None and self.humidifier_pin != None and self.heater_pin != None and pi_gpio_available and not self.simulate:
             try:
 
                 GPIO.setmode(GPIO.BOARD)
                 GPIO.setup(self.fan_pin, GPIO.OUT)
                 GPIO.setup(self.fan_pin_roots, GPIO.OUT)
+                GPIO.setup(self.humidifier_pin, GPIO.OUT)
                 GPIO.setup(self.heater_pin, GPIO.OUT)
                 return
             except Exception as e:
@@ -110,7 +115,7 @@ class SpaceVACDriver:
             
 
     def heat(self) -> Dict[str, float]:
-        if self.fan_pin != None and self.fan_pin_roots != None and self.heater_pin != None and pi_gpio_available and not self.simulate:
+        if self.fan_pin != None and self.heater_pin != None and pi_gpio_available and not self.simulate:
             """ Heating """
             try:
                 GPIO.output(self.heater_pin, GPIO.HIGH)
@@ -150,11 +155,12 @@ class SpaceVACDriver:
                 return 0 #Failed to set latch
 
     def cool_roots(self) -> Dict[str, float]:
-        if self.fan_pin_roots != None and pi_gpio_available and not self.simulate:
+        if self.fan_pin_roots != None and self.humidifier_pin != None and pi_gpio_available and not self.simulate:
             """ Cooling """
             try:
-                GPIO.output(self.fan_pin, GPIO.HIGH)
+                GPIO.output(self.fan_pin_roots, GPIO.HIGH)
                 time.sleep(0.1)
+                GPIO.output(self.humidifier_pin, GPIO.HIGH)
 
                 self.logger.debug("Turning ON Root Zone Fan")
                 return 1
@@ -190,11 +196,12 @@ class SpaceVACDriver:
                 return 0 #Failed to reset
 
     def turn_off_roots(self) -> Dict[str, float]:
-        if self.fan_pin_roots != None and pi_gpio_available and not self.simulate:
+        if self.fan_pin_roots != None and self.humidifier_pin != None and pi_gpio_available and not self.simulate:
             """ Turn Off"""
             try:
                 GPIO.output(self.fan_pin_roots, GPIO.LOW)
                 time.sleep(0.1)
+                GPIO.output(self.humidifier_pin, GPIO.LOW)
 
 
                 self.logger.debug("Turning off the SpaceVAC root zone fans")
