@@ -16,10 +16,16 @@
 				}
 			},
 			"actuator": {
-				"spacevac_status": {
+				"spacevac_canopy_status": {
 					"name": {
 						"type": "string",
-						"default": "spacevac_status"
+						"default": "spacevac_canopy_status"
+					}
+				},
+				"spacevac_root_status": {
+					"name": {
+						"type": "string",
+						"default": "spacevac_root_status"
 					}
 				}
 

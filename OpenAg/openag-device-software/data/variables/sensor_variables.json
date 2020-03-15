@@ -336,15 +336,29 @@
         }
 	},
 	{
-        "key": "spacevac_status",
+        "key": "spacevac_canopy_status",
         "info": {
             "name": {
-                "brief": "SpaceVAC (On/Off)",
-                "verbose": "SpaceVAC Status"
+                "brief": "SpaceVAC Canopy (On/Off)",
+                "verbose": "SpaceVAC Canopy Status"
             },
             "unit": {
                 "brief": "On/Off",
-                "verbose": "SpaceVAC Status",
+                "verbose": "SpaceVAC Canopy Status",
+                "type": "string"
+            }
+        }
+	},
+	{
+        "key": "spacevac_root_status",
+        "info": {
+            "name": {
+                "brief": "SpaceVAC Root (On/Off)",
+                "verbose": "SpaceVAC Root Zone Status"
+            },
+            "unit": {
+                "brief": "On/Off",
+                "verbose": "SpaceVAC Root Zone Status",
                 "type": "string"
             }
         }

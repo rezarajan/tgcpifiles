@@ -31,7 +31,8 @@ class SpaceVACManager(manager.PeripheralManager):
         self.humidity_name = self.variables["sensor"]["air_humidity_percent"]
         self.temperature_root_name = self.variables["sensor"]["root_temperature_celsius"]
 
-        self.spacevac_status_name = self.variables["actuator"]["spacevac_status"]
+        self.spacevac_canopy_status_name = self.variables["actuator"]["spacevac_canopy_status"]
+        self.spacevac_root_status_name = self.variables["actuator"]["spacevac_root_status"]
 
 
 
@@ -117,27 +118,64 @@ class SpaceVACManager(manager.PeripheralManager):
             return None   
 
     @property
-    def spacevac_status(self) -> Any:
+    def spacevac_canopy_status(self) -> Any:
         """Gets SpaceVAC status value."""
+        value = self.state.get_environment_reported_sensor_value(self.spacevac_canopy_status_name)
+        if value != None:
+            self.logger.debug(value)
+            return value
         return None
 
-    @spacevac_status.setter
-    def spacevac_status(self, value: Optional[Dict[str, float]]) -> None:
+    @spacevac_canopy_status.setter
+    def spacevac_canopy_status(self, value: Optional[Dict[str, float]]) -> None:
         """Sets lighting status value in shared state."""
+
         status = "OFF"
-        if value == 1:
-            status = "HEATING"
-        elif value == 0:
-            status = "COOLING"
+        if value == 0:
+            status = "COOLING CANOPY"
+        elif value == 1:
+            status = "HEATING CANOPY"
+        elif value == 2:
+            status = "CANOPY OFF"
         else:
             status = "OFF"
+
         self.state.set_peripheral_reported_sensor_value(
-            self.name, self.spacevac_status_name, status
+            self.name, self.spacevac_canopy_status_name, status
         )
         self.state.set_environment_reported_sensor_value(
-            self.name, self.spacevac_status_name, status, simple=True
+            self.name, self.spacevac_canopy_status_name, status, simple=True
         )
         self.logger.debug("Setting SpaceVAC Status to {}".format(status)) 
+
+    @property
+    def spacevac_root_status(self) -> Any:
+        """Gets SpaceVAC status value."""
+        value = self.state.get_environment_reported_sensor_value(self.spacevac_root_status_name)
+        if value != None:
+            self.logger.debug(value)
+            return value
+        return None
+        
+    @spacevac_root_status.setter
+    def spacevac_root_status(self, value: Optional[Dict[str, float]]) -> None:
+        """Sets lighting status value in shared state."""
+
+        status = "OFF"
+        if value == 0:
+            status = "ROOT ZONE OFF"
+        elif value == 1:
+            status = "COOLING ROOTS"
+        else:
+            status = "OFF"
+
+        self.state.set_peripheral_reported_sensor_value(
+            self.name, self.spacevac_root_status_name, status
+        )
+        self.state.set_environment_reported_sensor_value(
+            self.name, self.spacevac_root_status_name, status, simple=True
+        )
+        self.logger.debug("Setting SpaceVAC Root Zone Status to {}".format(status)) 
    
    
     def initialize_peripheral(self) -> None:
@@ -170,10 +208,10 @@ class SpaceVACManager(manager.PeripheralManager):
         self.logger.debug("Setting up")
         try:
             self.driver.setup_gpio()
-            setup_ok = self.driver.turn_off()
+            setup_ok = self.driver.turn_off() or self.driver.turn_off_roots()
             if setup_ok:
                 self.logger.debug("Setup OK")
-                self.spacevac_status = 2
+                self.spacevac_canopy_status = 2
             self.health = (100.0)
         except exceptions.DriverError as e:
             self.logger.exception("Unable to setup")
@@ -222,27 +260,18 @@ class SpaceVACManager(manager.PeripheralManager):
 
         if (
             self.root_temperature != None and self.desired_root_temperature != None
-            and self.temperature < self.desired_temperature
+            and self.root_temperature < self.desired_root_temperature
         ):
             self.logger.info("Root Zone Temperature too low, Stopping Root Zone Cooling!")
-            cooling_required = False
+            cooling_roots_required = False
 
         elif (
-            self.root_temperature != None and self.desiredroot__temperature != None
-            and self.temperature > self.desired_temperature + 0.0
+            self.root_temperature != None and self.desired_root__temperature != None
+            and self.root_temperature > self.desired_root_temperature + 0.0
         ):
             self.logger.info("Root Zone Temperature too high, Cooling the Root Zone!")
-            cooling_required = True
+            cooling_roots_required = True
         
-
-        # Check if all desired values exist:
-        all_desired_values_exist = True
-        if (
-            self.desired_temperature == None
-            # or self.desired_min_humidity == None
-            # or self.desired_max_humidity == None
-        ):
-            all_desired_values_exist = False
 
         # Check for misting timeout - must send update to device every misting cycle
         if heating_required != cooling_required:
@@ -250,16 +279,27 @@ class SpaceVACManager(manager.PeripheralManager):
                     self.logger.debug("Sending signal to cool")
                     self.driver.setup_gpio()
                     self.driver.cool()
-                    self.spacevac_status = 0
+                    self.spacevac_canopy_status = 0
             if heating_required:
                     self.logger.debug("Sending signal to heat")
                     self.driver.setup_gpio()
                     self.driver.heat()
-                    self.spacevac_status = 1
+                    self.spacevac_canopy_status = 1
         else:
             self.driver.turn_off()
-            self.spacevac_status = 2
+            self.spacevac_canopy_status = 2
             self.logger.debug("Turning off")
+            return
+
+        if cooling_roots_required:
+            self.logger.debug("Sending signal to cool the roots")
+            self.driver.setup_gpio()
+            self.driver.cool_roots()
+            self.spacevac_root_status = 1
+        else:
+            self.driver.turn_off_roots()
+            self.spacevac_root_status = 0
+            self.logger.debug("Turning off the root zone")
             return
 
 
@@ -325,7 +365,7 @@ class SpaceVACManager(manager.PeripheralManager):
         try:
             self.driver.setup_gpio()
             self.driver.heat()
-            self.spacevac_status = 1
+            self.spacevac_canopy_status = 1
             # self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
@@ -363,7 +403,7 @@ class SpaceVACManager(manager.PeripheralManager):
         try:
             self.driver.setup_gpio()
             self.driver.cool()
-            self.spacevac_status = 0
+            self.spacevac_canopy_status = 0
             # self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
@@ -401,7 +441,7 @@ class SpaceVACManager(manager.PeripheralManager):
         try:
             self.driver.setup_gpio()
             self.driver.cool_roots()
-            self.spacevac_status = 0
+            self.spacevac_root_status = 1
             # self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
@@ -439,7 +479,7 @@ class SpaceVACManager(manager.PeripheralManager):
         try:
             self.driver.setup_gpio()
             self.lighting_status = self.driver.turn_off()
-            self.spacevac_status = 2
+            self.spacevac_canopy_status = 0
             # self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR
@@ -477,7 +517,7 @@ class SpaceVACManager(manager.PeripheralManager):
         try:
             self.driver.setup_gpio()
             self.lighting_status = self.driver.turn_off_roots()
-            self.spacevac_status = 2
+            self.spacevac_root_status = 0
             # self.update_reported_variables()
         except exceptions.DriverError as e:
             self.mode = modes.ERROR

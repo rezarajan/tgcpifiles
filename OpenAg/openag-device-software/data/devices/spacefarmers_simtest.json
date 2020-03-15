@@ -74,7 +74,8 @@
                         "root_temperature_celsius": "root_temperature_celsius"
                     },
                     "actuator": {
-                        "spacevac_status": "spacevac_status"
+                        "spacevac_canopy_status": "spacevac_canopy_status",
+                        "spacevac_root_status": "spacevac_root_status"
                     }
                 },
                 "communication": {
