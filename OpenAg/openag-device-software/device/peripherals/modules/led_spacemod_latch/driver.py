@@ -15,11 +15,11 @@ from device.utilities.communication.i2c.main import I2C
 from device.utilities.communication.i2c.exceptions import I2CError
 from device.utilities.communication.i2c.mux_simulator import MuxSimulator
 
-from device.peripherals.modules.led_spacemod import exceptions
+from device.peripherals.modules.led_spacemod_latch import exceptions
 
 
 class LEDSpacemodDriver:
-    """Driver for LED panel"""
+    """Driver for array of led panels controlled by a dac5578."""
 
     # Initialize var defaults
     is_shutdown: bool = True
@@ -42,6 +42,7 @@ class LEDSpacemodDriver:
         self.address = config.get("address")
         self.port = config.get("port")
         self.pin = config.get("pin")
+        self.hard_reset_pin = config.get("hard_reset_pin")
         self.i2c_lock = i2c_lock
         self.simulate = simulate
         self.mux_simulator = mux_simulator
@@ -80,7 +81,10 @@ class LEDSpacemodDriver:
             self.mux = int(self.mux, 16)
 
         if self.pin != None:
-            self.pin = int(self.pin)   
+            self.pin = int(self.pin)
+
+        if self.hard_reset_pin != None:
+            self.hard_reset_pin = int(self.hard_reset_pin)    
 
     def setup_gpio(self) -> None:
         """
@@ -91,6 +95,7 @@ class LEDSpacemodDriver:
 
                 GPIO.setmode(GPIO.BOARD)
                 GPIO.setup(self.pin, GPIO.OUT)
+                GPIO.setup(self.hard_reset_pin, GPIO.OUT)
                 return
             except:
                 raise exceptions.GPIOSetupError(logger=self.logger)
@@ -101,10 +106,12 @@ class LEDSpacemodDriver:
 
     def turn_on(self) -> Dict[str, float]:
         if self.pin != None and pi_gpio_available and not self.simulate:
-            """Turns LEDs on"""
+            """Sets Soft Latch On"""
             try:
                 GPIO.output(self.pin, GPIO.HIGH)
+                # Soft Latch RC Time
                 time.sleep(0.1)
+                GPIO.output(self.pin, GPIO.LOW)
 
                 self.logger.debug("Turning on")
                 self.is_on = True
@@ -114,17 +121,19 @@ class LEDSpacemodDriver:
             return 0 # Failed to reset
         else:
             if self.simulate:
-                self.logger.debug("Turning on")
+                self.logger.debug("Turning on ")
                 return 1 # Simulating a successful latch set
             else:
                 return 0 #Failed to set latch
 
     def turn_off(self) -> Dict[str, float]:
-        if self.pin != None and pi_gpio_available and not self.simulate:
-            """Turns LEDs off"""
+        if self.hard_reset_pin != None and pi_gpio_available and not self.simulate:
+            """Drains LED Soft Latch - Reset"""
             try:
-                GPIO.output(self.pinpin, GPIO.LOW)
+                GPIO.output(self.hard_reset_pin, GPIO.HIGH)
+                # Soft Latch RC Time
                 time.sleep(0.1)
+                GPIO.output(self.hard_reset_pin, GPIO.LOW)
 
                 self.logger.debug("Turning off")
                 self.is_on = False
@@ -134,7 +143,7 @@ class LEDSpacemodDriver:
             return 0 # Failed to reset
         else:
             if self.simulate:
-                self.logger.debug("Turning off")
+                self.logger.debug("Turning off (hard reset)")
                 return 1 # Simulating a successful reset
             else:
                 return 0 #Failed to reset
@@ -149,7 +158,6 @@ class LEDSpacemodDriver:
                         return 1
                     elif self.is_on == True:
                         self.logger.debug("Turning off")
-                        self.is_on = False
                         self.turn_off()
                         return 0
                 except:
@@ -165,3 +173,4 @@ class LEDSpacemodDriver:
                     self.logger.debug("Turning off")
                     self.is_on = False
                     return 0
+
