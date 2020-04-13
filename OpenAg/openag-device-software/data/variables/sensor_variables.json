@@ -336,6 +336,20 @@
         }
 	},
 	{
+        "key": "peltier_status",
+        "info": {
+            "name": {
+                "brief": "Peltier (On/Off)",
+                "verbose": "Peltier Status"
+            },
+            "unit": {
+                "brief": "On/Off",
+                "verbose": "Peltier Status",
+                "type": "string"
+            }
+        }
+	},
+	{
         "key": "spacevac_canopy_status",
         "info": {
             "name": {

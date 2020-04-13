@@ -1,0 +1,110 @@
+{
+	"name":  "Peltier",
+	"version": "1",
+	"uuid": "2f2298d2-75d7-4ba6-b00b-ac4c9b18fa03",
+	"module_name": "peltier.manager",
+	"class_name": "PeltierManager",
+	"parameters": {
+		"variables": {
+			"sensor": {
+
+				"water_temperature_celsius": {
+					"name": {
+						"type": "string",
+						"default": "water_temperature_celsius"
+					}
+				}
+			},
+			"actuator": {
+				"peltier_status": {
+					"name": {
+						"type": "string",
+						"default": "peltier_status"
+					}
+				}
+			}
+		},	
+		"communication": {
+			"devices": [
+				{
+					"bus": {
+						"type": "integer",
+						"default": "none"
+					},
+					"mux": {
+						"type": "string",
+						"default": "none"
+					},
+					"is_active_high": {
+						"type": "boolean",
+						"default": true
+					},
+					"address": {
+						"type": "integer",
+						"default": "none"
+					},
+					"port": {
+						"type": "integer",
+						"default": "none"
+					},
+					"pin": {
+						"type": "integer",
+						"default": 5
+					}
+					
+				}
+			]
+		}
+	},
+	"properties": {
+	},
+	"events": [
+		{
+		    "name": "Reset",
+		    "description": "Reset sensor.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Shutdown",
+		    "description": "Shutdown sensor.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Set Sampling Interval",
+		    "description": "Sets sampling interval.",
+		    "value": {
+		        "default": 10,
+		        "unit": "Seconds"
+		    },
+		    "sequence": null
+		},
+		{
+		    "name": "Enable Manual Mode",
+		    "description": "Allows actuator to be controlled by manual events.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Cool",
+		    "description": "Turns on the Peltier.",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": false
+		},
+		{
+		    "name": "Turn Off",
+		    "description": "Turns off the Peltier.",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": false
+		}
+	],
+	"info": {
+		"variables": {
+			"sensors": null,
+			"actuators":null
+		}
+	}
+}
