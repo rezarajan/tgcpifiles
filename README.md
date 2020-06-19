@@ -1,4 +1,4 @@
-# tgcpifiles
+# Open Agriculture Initiative
 An operating system for data-driven agriculture
 
 # Note
