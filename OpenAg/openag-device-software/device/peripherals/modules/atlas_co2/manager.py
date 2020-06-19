@@ -88,7 +88,7 @@ class AtlasCo2Manager(manager.PeripheralManager):
             self.logger.error("Unable to update")
             self.mode = modes.ERROR
             self.health = 0
-            returnte
+            return
 
     def clear_reported_values(self) -> None:
         """Clears reported values."""

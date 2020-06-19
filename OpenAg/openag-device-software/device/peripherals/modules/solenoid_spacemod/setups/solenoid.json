@@ -1,0 +1,107 @@
+{
+	"name":  "Solenoid Actuator",
+	"version": "1",
+	"uuid": "bda1f18e-5f11-11ea-8df1-6003088e020e",
+	"module_name": "solenoid_spacemod.manager",
+	"class_name": "SolenoidManager",
+	"parameters": {
+		"variables": {
+			"sensor": null,
+			"actuator": {
+				"misting_cycle": {
+					"name": {
+						"type": "String",
+						"default": "Mister Cycle (Off) Time"
+					}
+				},
+				"mister_on_time": {
+					"name": {
+						"type": "String",
+						"default": "Mister On Time"
+					}
+				}
+			}
+		},	
+		"communication": {
+			"devices": [
+				{
+					"bus": {
+						"type": "integer",
+						"default": "none"
+					},
+					"mux": {
+						"type": "string",
+						"default": "none"
+					},
+					"is_active_high": {
+						"type": "boolean",
+						"default": true
+					},
+					"address": {
+						"type": "integer",
+						"default": "none"
+					},
+					"port": {
+						"type": "integer",
+						"default": "none"
+					},
+					"pin": {
+						"type": "integer",
+						"default": 6
+					}
+				}
+			]
+		}
+	},
+	"properties": {
+	},
+	"events": [
+		{
+		    "name": "Reset",
+		    "description": "Reset sensor.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Shutdown",
+		    "description": "Shutdown sensor.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Set Sampling Interval",
+		    "description": "Sets sampling interval.",
+		    "value": {
+		        "default": 10,
+		        "unit": "Seconds"
+		    },
+		    "sequence": null
+		},
+		{
+		    "name": "Enable Manual Mode",
+		    "description": "Allows actuator to be controlled by manual events.",
+		    "value": null,
+		    "sequence": null
+		},
+		{
+		    "name": "Turn On",
+		    "description": "Turns on all channels on light panel.",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": false
+		},
+		{
+		    "name": "Turn Off",
+		    "description": "Turns off all channels on light panel.",
+		    "value": null,
+		    "sequence": null,
+		    "is_manual": false
+		}
+	],
+	"info": {
+		"variables": {
+			"sensors": null,
+			"actuators":null
+		}
+	}
+}

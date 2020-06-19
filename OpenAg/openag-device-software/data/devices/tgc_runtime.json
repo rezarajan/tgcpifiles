@@ -1,0 +1,189 @@
+{   
+    "format": "openag-standard-v1",
+    "name": "TGC Runtime",
+    "uuid": "495e5383-d550-470a-93be-bc09927da863",
+    "peripherals": [
+        {
+            "name": "Mister Solenoid Actuator",
+            "type": "Solenoid",
+            "uuid": "bda1f18e-5f11-11ea-8df1-6003088e020e",
+            "parameters": {
+               "setup": {
+                    "name": "Mister Solenoid",
+                    "file_name": "solenoid_spacemod/setups/solenoid"
+                },
+                "variables": {
+                    "actuator": {
+                        "misting_cycle": "misting_cycle",
+                        "mister_on_time": "mister_on_time"
+                    }
+                },
+                "communication": {
+                    "bus": "none", 
+                    "mux": "none", 
+                    "is_active_high": true,
+                    "port": "none",
+                    "pin": 16
+                }
+            }
+        },
+        {
+            "name": "Reservoir Cooler Peltier",
+            "type": "Peltier",
+            "uuid": "2f2298d2-75d7-4ba6-b00b-ac4c9b18fa03",
+            "parameters": {
+               "setup": {
+                    "name": "Peltier",
+                    "file_name": "peltier/setups/peltier"
+                },
+                "variables": {
+                    "sensor":{
+                        "water_temperature_celsius": "water_temperature_celsius"
+                    },
+                    "actuator": {
+                        "peltier_status": "peltier_status"
+                    }
+                },
+                "communication": {
+                    "bus": "none", 
+                    "mux": "none", 
+                    "is_active_high": true,
+                    "port": "none",
+                    "pin": 18
+                }
+            }
+        },
+        {
+            "name": "LED-Spacemod",
+            "type": "LEDSpacemod",
+            "uuid": "d7a6bf94-dd4f-4a36-9dfb-5c6c978efe02",
+            "parameters": {
+               "setup": {
+                    "name": "LED Panels",
+                    "file_name": "led_spacemod/setups/spacemod"
+                },
+                "variables": {
+                    "sensor": {
+                        "ppfd_umol_m2_s": "light_ppfd_umol_m2_s",
+                        "spectrum_nm_percent": "light_spectrum_nm_percent",
+                        "illumination_distance_cm": "light_illumination_distance_cm"
+                    },
+                    "actuator": {
+                        "channel_output_percents": "light_channel_output_percents",
+                        "lighting_on_time": "lighting_on_time",
+                        "lighting_off_time": "lighting_off_time",
+                        "lighting_status": "lighting_status"
+                    }
+                },
+                "communication": {
+                    "bus": "none", 
+                    "mux": "none", 
+                    "is_active_high": true,
+                    "port": "none",
+                    "pin": 22
+                }
+            }
+        },
+        {
+            "name": "DHT22-Top",
+            "type": "DHT22",
+            "uuid": "5a420aa5-c2ce-400c-abdd-73347b9838ad",
+            "parameters": {
+                "setup": {
+                    "name": "DHT22 Temperature / Humidity Sensor Default",
+                    "file_name": "dht22/setups/default"
+                },
+                "variables": {
+                    "sensor": {
+                        "temperature_celsius": "air_temperature_celsius",
+                        "humidity_percent": "air_humidity_percent"                    
+                    },
+                    "actuator": null
+                },
+                "communication": {
+                    "bus": "default", 
+                    "mux": "default", 
+                    "channel": 2, 
+                    "address": "0x40",
+                    "pin": 4
+                }
+            }
+        },
+        {
+            "name": "AtlasTemp-Reservoir",
+            "type": "AtlasTemp",
+            "uuid": "9e96cad1-fe29-4e2b-acdd-65d0288b50a3",
+            "parameters": {
+                "setup": {
+                    "name": "Atlas Temperature Sensor Default",
+                    "file_name": "atlas_temp/setups/default"
+                },
+                "variables": {
+                    "sensor": {
+                        "temperature": "water_temperature_celsius"
+                    },
+                    "actuator": null
+                },
+                "communication": {
+                    "bus": "default", 
+                    "mux": "default", 
+                    "channel": 6, 
+                    "address": "0x66"
+                }
+            }
+        },
+        {
+            "name": "AtlasPH-Reservoir",
+            "type": "AtlasPH",
+            "uuid": "c29dd9ee-efe2-451e-82e4-4fe107bb6980",
+            "parameters": {
+                "setup": {
+                    "name": "Atlas Potential Hydrogen Sensor Default",
+                    "file_name": "atlas_ph/setups/default"
+                },
+                "variables": {
+                    "sensor": {
+                        "ph": "water_potential_hydrogen"
+                    },
+                    "actuator": null,
+                    "compensation": {
+                        "temperature_celsius": "water_temperature_celsius"
+                    }
+                },
+                "communication": {
+                    "bus": "default", 
+                    "mux": "default", 
+                    "channel": 6, 
+                    "address": "0x63"
+                }
+            }
+        },
+        {
+            "name": "AtlasEC-Reservoir",
+            "type": "AtlasEC",
+            "uuid": "349fba97-1f23-48c7-8fe7-1ea717915dd4",
+            "parameters": {
+                "setup": {
+                    "name": "Atlas Electrical Conductivity Sensor Default (K1.0)",
+                    "file_name": "atlas_ec/setups/default_k1_0"
+                },
+                "variables": {
+                    "sensor": {
+                        "ec_ms_cm": "water_electrical_conductivity_ms_cm"
+                    },
+                    "actuator": null,
+                    "compensation": {
+                        "temperature_celsius": null
+                    }
+                },
+                "communication": {
+                    "bus": "default", 
+                    "mux": "default", 
+                    "channel": 6,
+                    "address": "0x64"
+                }
+            }
+        }
+    ],
+    "controllers": null
+}

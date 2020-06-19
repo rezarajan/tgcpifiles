@@ -5,7 +5,7 @@ from typing import Any, Dict
 from device.utilities.bitwise import byte_str
 
 # Import simulator base clase
-from device.peripherals.classes.atlas.simulator import AtlasSimulator
+from device.peripherals.classes.atlas.simulator import AtlasSimulator, ATLAS_SUCCESS_31
 
 
 class AtlasPHSimulator(AtlasSimulator):  # type: ignore
@@ -56,5 +56,12 @@ class AtlasPHSimulator(AtlasSimulator):  # type: ignore
                 0x00,
             ]
         )
-
         self.writes[byte_str(PH_WRITE_BYTES)] = PH_RESPONSE_BYTES
+
+        PH_TEMP_COMPENSATION_WRITE_BYTES = bytes([0x54, 0x2C, 0x32, 0x32, 0x2E, 0x39, 0x37, 0x00])
+        PH_TEMP_COMPENSATION_RESPONSE_BYTES = ATLAS_SUCCESS_31
+
+        
+        self.writes[
+            byte_str(PH_TEMP_COMPENSATION_WRITE_BYTES)
+        ] = PH_TEMP_COMPENSATION_RESPONSE_BYTES

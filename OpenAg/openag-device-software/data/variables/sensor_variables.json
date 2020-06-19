@@ -14,6 +14,20 @@
 		}
 	},
 	{
+		"key": "root_temperature_celsius",
+		"info": {
+			"name": {
+				"brief": "Root Temp",
+				"verbose": "Root Temperature"
+			},
+			"unit": {
+				"brief": "C",
+				"verbose": "Celsius",
+				"type": "number"
+			}
+		}
+	},
+	{
 		"key": "air_humidity_percent",
 		"info": {
 			"name": {
@@ -250,5 +264,117 @@
 				"type": "number"
 			}
 		}
+	},
+	{
+        "key": "mister_on_time",
+        "info": {
+            "name": {
+                "brief": "Mister On Time",
+                "verbose": "Active Misting Time"
+            },
+            "unit": {
+                "brief": "Mister Time",
+                "verbose": "Mister On Time",
+                "type": "number"
+            }
+        }
+	},
+	{
+        "key": "misting_cycle",
+        "info": {
+            "name": {
+                "brief": "Misting Cycle",
+                "verbose": "Mister Cycle (Off) Time"
+            },
+            "unit": {
+                "brief": "s",
+                "verbose": "Seconds",
+                "type": "number"
+            }
+        }
+	},
+	{
+        "key": "lighting_on_time",
+        "info": {
+            "name": {
+                "brief": "Lighting On Time",
+                "verbose": "Lighting On Time"
+            },
+            "unit": {
+                "brief": "Seconds",
+                "verbose": "Lighting On Time",
+                "type": "number"
+            }
+        }
+	},
+	{
+        "key": "lighting_off_time",
+        "info": {
+            "name": {
+                "brief": "Lighting Off Time",
+                "verbose": "Lighting Off Time"
+            },
+            "unit": {
+                "brief": "Seconds",
+                "verbose": "Lighting Off Time",
+                "type": "number"
+            }
+        }
+	},
+	{
+        "key": "lighting_status",
+        "info": {
+            "name": {
+                "brief": "Lights (On/Off)",
+                "verbose": "Lighting Status"
+            },
+            "unit": {
+                "brief": "On/Off",
+                "verbose": "Lighting Status",
+                "type": "string"
+            }
+        }
+	},
+	{
+        "key": "peltier_status",
+        "info": {
+            "name": {
+                "brief": "Peltier (On/Off)",
+                "verbose": "Peltier Status"
+            },
+            "unit": {
+                "brief": "On/Off",
+                "verbose": "Peltier Status",
+                "type": "string"
+            }
+        }
+	},
+	{
+        "key": "spacevac_canopy_status",
+        "info": {
+            "name": {
+                "brief": "SpaceVAC Canopy (On/Off)",
+                "verbose": "SpaceVAC Canopy Status"
+            },
+            "unit": {
+                "brief": "On/Off",
+                "verbose": "SpaceVAC Canopy Status",
+                "type": "string"
+            }
+        }
+	},
+	{
+        "key": "spacevac_root_status",
+        "info": {
+            "name": {
+                "brief": "SpaceVAC Root (On/Off)",
+                "verbose": "SpaceVAC Root Zone Status"
+            },
+            "unit": {
+                "brief": "On/Off",
+                "verbose": "SpaceVAC Root Zone Status",
+                "type": "string"
+            }
+        }
 	}
 ]

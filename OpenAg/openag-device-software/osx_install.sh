@@ -15,7 +15,7 @@ echo "Installing software..."
 bash $PROJECT_ROOT/scripts/install/initialize_device_config.sh $PROJECT_ROOT 
 bash $PROJECT_ROOT/scripts/install/initialize_directory_structure.sh $PROJECT_ROOT
 #bash $PROJECT_ROOT/scripts/install/update_operating_system.sh
-#bash $PROJECT_ROOT/scripts/install/install_python36.sh
+bash $PROJECT_ROOT/scripts/install/install_python36.sh
 #bash $PROJECT_ROOT/scripts/install/initialize_port80_forwarding.sh
 #bash $PROJECT_ROOT/scripts/install/install_misc_dependencies.sh
 bash $PROJECT_ROOT/scripts/install/create_virtual_environment.sh $PROJECT_ROOT
